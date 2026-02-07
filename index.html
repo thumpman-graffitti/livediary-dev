@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LIVE LOG</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+　　　<style>
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<header class="app-header">
+    <div class="confetti" style="left:10%; animation-delay: 0s; background:#ffcc00;"></div>
+    <div class="confetti" style="left:30%; animation-delay: 1.5s; background:#ffffff;"></div>
+    <div class="confetti" style="left:55%; animation-delay: 0.5s; background:#ff9500;"></div>
+    <div class="confetti" style="left:85%; animation-delay: 2.2s; background:#ffffff;"></div>
+    
+    <div class="header-title">LIVEDIARY</div>
+</header>
+
+<main id="app">
+    <div id="page-home" class="tab-content active">
+        <div class="card">
+            <h2>アーティスト新規追加</h2> <div class="add-artist-form">
+                <input type="text" id="new-artist-name" placeholder="名前を入力">
+                <button onclick="addArtist()" class="btn-add-inline">追加</button>
+            </div>
+        </div>
+            <div class="card">
+                <span class="section-title">新しいライブの記録</span>
+                <select id="live-artist-select"><option value="">アーティストを選択</option></select>
+                <input type="date" id="live-date"> 
+                <input type="text" id="live-name" placeholder="公演タイトル（任意）">
+                    <input type="text" id="live-venue" list="venue-list" placeholder="会場名を入力">
+                    <datalist id="venue-list"></datalist>
+                <select id="live-pref">
+                    <option value="">都道府県を選択</option>
+                    <option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="三重県">三重県</option><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option><option value="海外">海外</option>
+                </select>
+                <textarea id="live-memo" placeholder="メモ・感想" rows="3"></textarea>
+                <button onclick="addLive()" class="accent-btn">ライブを登録する</button>
+            </div>
+        </div>
+
+        <div id="page-history" class="tab-content"><div id="history-list"></div></div>
+        
+        
+        <div id="page-stats" class="tab-content">
+    <div class="card" style="background: linear-gradient(135deg, #FFD700, #FFA500); border: none; margin-bottom: 15px;">
+        <button onclick="openShareModal()" style="width: 100%; background: none; border: none; color: #fff; font-weight: 800; font-size: 1.1rem; padding: 10px; cursor: pointer;">
+            レポートを生成する
+        </button>
+    </div>
+
+    <div class="card" style="margin-bottom: 15px;">
+        <span class="section-title">📊 表示対象</span>
+        <select id="stats-filter-artist" onchange="renderStats()" style="margin-bottom:0;">
+            <option value="all">すべてのアーティスト</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <div style="max-width: 200px; margin: 0 auto; position: relative;">
+            <canvas id="artistChart"></canvas>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); text-align: center;">
+                <div style="font-size: 0.75rem; color: #8e8e93; font-weight: bold;" id="stats-total-label">Total</div>
+                <div id="total-count-display" style="font-size: 1.8rem; font-weight: bold; color: var(--primary-color);">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stats-artist-ranking"></div>
+    <div id="stats-song-ranking"></div>
+
+    <div id="stats-yearly-ranking"></div>
+    
+    <div id="stats-venue-ranking"></div>
+
+    <div class="card" style="padding: 20px; border: 1px solid #f2f2f7;">
+        <span class="section-title">🗺 <span id="map-target-name">全国</span>遠征マップ</span>
+        <div id="japan-map" style="margin: 15px 0;"></div>
+        <div style="text-align: center; font-size: 0.85rem; color: #8e8e93; margin-top: 10px; background: #f9f9fb; padding: 8px; border-radius: 8px;">
+            制覇: <span id="visited-pref-count" style="font-weight:bold; color:var(--primary-color); font-size: 1.1rem;">0</span> <span style="font-size: 0.7rem;">/ 47 都道府県</span>
+        </div>
+    </div>
+
+    <div id="stats-pref-ranking"></div>
+</div>
+
+
+<div id="page-settings" class="tab-content">
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.0</div>
+
+<div class="settings-card">
+    <span class="section-title">データのバックアップ・リストア</span>
+    <div class="backup-controls">
+        <button onclick="exportData()">バックアップ</button>
+        <button onclick="importData()">リストア</button>
+    </div>
+</div>
+
+    <div class="card">
+        <span class="section-title">登録アーティストの管理</span>
+        <input type="text" id="artist-search-input" placeholder="アーティスト名で検索..." oninput="renderArtistManager()" style="margin-bottom: 10px;">
+        
+        <div id="artist-manager-list" style="max-height: 300px; overflow-y: auto; border-top: 1px solid #eee;">
+            </div>
+    </div>
+</div>
+
+
+    </main>
+
+    <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title" style="margin:0; font-size:1rem;">ライブ詳細</h3>
+                <button onclick="closeModal()" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-view">
+                    <h2 id="view-live-name" style="color:var(--primary-color); margin-top:0;"></h2>
+                    <div id="live-details-info"></div>
+                    <div id="setlist-display" style="background:#f9f9fb; padding:15px; border-radius:10px; margin-top:15px;"></div>
+                    <button onclick="switchEditMode()" class="primary-btn" style="margin-top:20px;">編集する</button>
+                </div>
+                <div id="modal-edit" class="hidden">
+                    <input type="date" id="edit-date">
+                    <input type="text" id="edit-name" placeholder="ライブ名">
+                    <input type="text" id="edit-venue" placeholder="会場名">
+                        <select id="edit-pref">
+                        <option value="">都道府県を選択</option>
+                     <option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="三重県">三重県</option><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option><option value="海外">海外</option>
+    </select>
+                    <textarea id="edit-memo" rows="3" placeholder="メモ"></textarea>
+                    <textarea id="edit-setlist" rows="5" placeholder="セトリ（改行区切り）"></textarea>
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button onclick="saveEdit()" class="primary-btn" style="flex:2;">保存</button>
+                        <button onclick="deleteLive()" style="flex:1; background:white; color:red; border:1px solid red; border-radius:10px;">削除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div id="share-modal" class="modal-overlay hidden" onclick="closeShareModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>レポート条件</h3>
+            <button onclick="closeShareModal()" class="close-btn">×</button>
+        </div>
+        
+        <div class="modal-body">
+            <span class="section-title">1. 集計期間（Period）</span>
+            <select id="share-period-type">
+                <option value="all">ALL TIME（全期間）</option>
+                </select>
+            
+            <span class="section-title" style="margin-top:15px;">2. アーティスト（Artist）</span>
+            <select id="share-artist-type">
+                <option value="all">ALL Artists（全対象）</option>
+                </select>
+
+
+<span class="section-title" style="margin-top:20px;">3. 推し色（テーマ）を選ぶ</span>
+<div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+    
+    <div style="display: flex; justify-content: space-between; max-width: 210px;">
+        <button onclick="setTheme('#af52de')" title="紫" style="width:34px; height:34px; background:#af52de; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+        <button onclick="setTheme('#ff3b30')" title="赤" style="width:34px; height:34px; background:#ff3b30; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+        <button onclick="setTheme('#007130')" title="緑" style="width:34px; height:34px; background:#007130; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+        <button onclick="setTheme('#5ac8fa')" title="水色" style="width:34px; height:34px; background:#5ac8fa; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+        <button onclick="setTheme('#34c759')" title="黄緑" style="width:34px; height:34px; background:#34c759; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+    </div>
+
+    <div style="display: flex; align-items: center; max-width: 275px;">
+        <div style="display: flex; gap: 10px; width: 122px;">
+            <button onclick="setTheme('#ffb6c1')" title="ピンク" style="width:34px; height:34px; background:#ffb6c1; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+            <button onclick="setTheme('#ffcc00')" title="黄色" style="width:34px; height:34px; background:#ffcc00; border-radius:50%; border:2px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></button>
+            <button onclick="setTheme('#ffffff')" title="白" style="width:34px; height:34px; background:#ffffff; border-radius:50%; border:1px solid #c7c7cc; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);"></button>
+        </div>
+        
+        <div style="flex-grow: 1;"></div> 
+
+        <div style="height: 30px; border-left: 2px solid #eee; margin-right: 12px;"></div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; width: 40px;">
+            <input type="color" id="custom-theme-color" onchange="setTheme(this.value)" style="width:34px; height:34px; padding:0; border:none; background:none; cursor:pointer;">
+            <span style="font-size:0.6rem; color:#8e8e93; margin-top: 2px;">自由色</span>
+        </div>
+    </div>
+</div>
+
+            <button onclick="generateReport()" class="accent-btn" style="background: var(--primary-color); height: 50px; font-size: 1.1rem;">レポートを表示</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div id="report-preview-overlay" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
+    <div id="report-card-container" onclick="event.stopPropagation()"></div>
+    
+    <div class="report-action-buttons" onclick="event.stopPropagation()">
+        <button onclick="saveReportImage()" class="primary-btn" style="margin-top:20px; width:200px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">画像の保存／シェア</button>
+        <button onclick="document.getElementById('report-preview-overlay').classList.add('hidden')" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; font-size:0.9rem; opacity:0.8;">閉じる</button>
+    </div>
+</div>
+
+    <nav class="tab-bar">
+        <button onclick="showPage('home')" id="tab-home" class="active"><span class="icon">♢</span><span>ホーム</span></button>
+        <button onclick="showPage('history')" id="tab-history"><span class="icon">▤</span><span>履歴</span></button>
+        <button onclick="showPage('stats')" id="tab-stats"><span class="icon">○</span><span>統計</span></button>
+        <button onclick="showPage('settings')" id="tab-settings"><span class="icon">⚙</span><span>管理</span></button>
+    </nav>
+
+    <script>
+    const prefCodes = {
+    "北海道":"HKD","青森県":"AOM","岩手県":"IWT","宮城県":"MYG","秋田県":"AKT","山形県":"YGT","福島県":"FKS",
+    "茨城県":"IBR","栃木県":"TCG","群馬県":"GMA","埼玉県":"STM","千葉県":"CHB","東京都":"TKY","神奈川県":"KNG",
+    "新潟県":"NGT","富山県":"TYM","石川県":"ISK","福井県":"FKI","山梨県":"YNS","長野県":"NGN","岐阜県":"GIF",
+    "静岡県":"SZK","愛知県":"AIC","三重県":"MIE","滋賀県":"SHG","京都府":"KYT","大阪府":"OSK","兵庫県":"HYG",
+    "奈良県":"NRA","和歌山県":"WKY","鳥取県":"TTR","島根県":"SMN","岡山県":"OKY","広島県":"HRS","山口県":"YMG",
+    "徳島県":"TKS","香川県":"KGW","愛媛県":"EHM","高知県":"KCH","福岡県":"FUK","佐賀県":"SAG","長崎県":"NGS",
+    "熊本県":"KMT","大分県":"OIT","宮崎県":"MZA","鹿児島県":"KGS","沖縄県":"OKN"
+};
+
+        let db = JSON.parse(localStorage.getItem('live_app_db') || '{"artists":[], "lives":[]}');
+        let currentId = null; let chart = null;
+        const refinedColors = ['#007130', '#34c759', '#30b0c7', '#007aff', '#5856d6', '#ff3b30', '#ff9500'];
+        const prefOrder = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県","海外"];
+
+window.onload = () => { 
+    updateArtistSelect(); 
+    updateVenueSuggestions(); // ← これを追加
+    showPage('home'); 
+    document.getElementById('live-date').value = new Date().toISOString().split('T')[0]; 
+};
+
+        function save() { localStorage.setItem('live_app_db', JSON.stringify(db)); }
+
+        function showPage(id) {
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+            document.getElementById('page-'+id).classList.add('active');
+            document.getElementById('tab-'+id).classList.add('active');
+            if(id==='history') renderHistory();
+            if(id==='stats') renderStats();
+            if(id==='settings') renderArtistManager();
+        }
+
+        function updateArtistSelect() {
+            const s = document.getElementById('live-artist-select');
+            s.innerHTML = '<option value="">アーティストを選択</option>' + db.artists.sort().map(a=>`<option value="${a}">${a}</option>`).join('');
+        }
+
+        function addArtist() {
+            const v = document.getElementById('new-artist-name').value.trim();
+            if(!v || db.artists.includes(v)) return;
+            db.artists.push(v); save(); updateArtistSelect();
+            document.getElementById('new-artist-name').value = '';
+        }
+
+function updateVenueSuggestions() {
+    const venueListElement = document.getElementById('venue-list');
+    if (!venueListElement) return;
+
+    // 全てのライブ履歴から会場名を取得し、重複を削除してソート
+    const venues = [...new Set(db.lives.map(live => live.venue))]
+        .filter(venue => venue && venue.trim() !== "")
+        .sort();
+
+    // datalistの中身を更新
+    venueListElement.innerHTML = venues
+        .map(venue => `<option value="${venue}">`)
+        .join('');
+}
+
+
+
+
+
+        function addLive() {
+            const art = document.getElementById('live-artist-select').value;
+            const day = document.getElementById('live-date').value;
+            if(!art || !day) return alert('入力不足');
+            db.lives.push({ id:Date.now(), artist:art, date:day, name:document.getElementById('live-name').value, venue:document.getElementById('live-venue').value, pref:document.getElementById('live-pref').value, memo:document.getElementById('live-memo').value, setlist:[] });
+            save();
+            updateVenueSuggestions(); // ← 登録後に最新の会場をリストに反映
+                        // --- ここから入力エリアの初期化処理を追加 ---
+            document.getElementById('live-artist-select').value = '';
+            document.getElementById('live-name').value = '';
+            document.getElementById('live-venue').value = '';
+            document.getElementById('live-pref').value = '';
+            document.getElementById('live-memo').value = '';
+            // 日付は今日の日付に戻す（お好みで）
+            document.getElementById('live-date').value = new Date().toISOString().split('T')[0];
+            
+            showPage('history');
+        }
+
+// --- ここから差し替え ---
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            container.innerHTML = '';
+            db.artists.sort().forEach(art => {
+                const lives = db.lives.filter(l=>l.artist===art).sort((a,b)=>new Date(b.date)-new Date(a.date));
+                if(!lives.length) return;
+                const card = document.createElement('div');
+                card.className = 'card'; card.style.padding = '0';
+                card.innerHTML = `<div style="padding:15px; font-weight:bold; cursor:pointer;" onclick="this.nextElementSibling.classList.toggle('hidden')">${art} <span style="float:right; color:var(--primary-color)">${lives.length}公演</span></div>
+                    <div class="hidden" style="border-top:1px solid #eee;">
+                    ${lives.map(l=>`
+                        <div class="live-history-item" onclick="openDetail(${l.id})" style="padding:14px; border-bottom:1px solid #f2f2f7; cursor:pointer;">
+                            <div style="font-size:0.75rem; color:#8e8e93;">${l.date}</div>
+                            <div style="font-weight:bold;">${l.name||'(無題)'}</div>
+                            <div class="history-venue" style="font-size:0.85rem; color:#666; margin-top:4px;">📍 ${l.venue || '会場未登録'}</div>
+                        </div>`).join('')}
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function openDetail(id) {
+            currentId = id; 
+            const l = db.lives.find(x=>x.id===id);
+            if(!l) return;
+            // 表示内容のセット
+            document.getElementById('view-live-name').innerText = l.name || 'ライブ詳細';
+            document.getElementById('live-details-info').innerHTML = `<p>📅 ${l.date}</p><p>📍 ${l.venue || '未登録'} (${l.pref || '-'})</p><p>${l.memo||''}</p>`;
+            document.getElementById('setlist-display').innerHTML = l.setlist?.length ? l.setlist.map((s,i)=>`<div>${i+1}. ${s}</div>`).join('') : 'セトリ未登録';
+            
+            // 重要：まず詳細画面を見せて、編集画面を隠す
+            document.getElementById('modal-view').classList.remove('hidden');
+            document.getElementById('modal-edit').classList.add('hidden');
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+// 編集モードに切り替える関数を修正
+function switchEditMode() {
+    const l = db.lives.find(x=>x.id===currentId);
+    if(!l) return;
+    
+    document.getElementById('edit-date').value = l.date;
+    document.getElementById('edit-name').value = l.name || '';
+    document.getElementById('edit-venue').value = l.venue || '';
+    document.getElementById('edit-pref').value = l.pref || ''; // ← 追加：現在の都道府県をセット
+    document.getElementById('edit-memo').value = l.memo || '';
+    document.getElementById('edit-setlist').value = (l.setlist||[]).join('\n');
+    
+    document.getElementById('modal-view').classList.add('hidden');
+    document.getElementById('modal-edit').classList.remove('hidden');
+}
+
+// 編集を保存する関数を修正
+function saveEdit() {
+    const l = db.lives.find(x=>x.id===currentId);
+    l.date = document.getElementById('edit-date').value;
+    l.name = document.getElementById('edit-name').value;
+    l.venue = document.getElementById('edit-venue').value;
+    l.pref = document.getElementById('edit-pref').value; // ← 追加：新しい都道府県を保存
+    l.memo = document.getElementById('edit-memo').value;
+    l.setlist = document.getElementById('edit-setlist').value.split('\n').filter(s=>s.trim());
+    
+    save(); 
+    updateVenueSuggestions(); // 会場マスターも更新
+    closeModal(); 
+    renderHistory();
+}
+
+        function deleteLive() { if(confirm('削除しますか？')){ db.lives=db.lives.filter(x=>x.id!==currentId); save(); closeModal(); renderHistory(); } }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); document.getElementById('modal-view').classList.remove('hidden'); document.getElementById('modal-edit').classList.add('hidden'); }
+
+
+
+// アーティスト選択肢を更新（統計タブを開くたびに最新にする）
+function updateStatsFilter() {
+    const s = document.getElementById('stats-filter-artist');
+    const current = s.value;
+    // 重複なしでソートされたアーティスト一覧
+    s.innerHTML = '<option value="all">すべてのアーティスト</option>' + 
+                  [...db.artists].sort().map(a => `<option value="${a}">${a}</option>`).join('');
+    s.value = current || 'all';
+}
+
+// 統計描画のメイン関数
+function renderStats() {
+    updateStatsFilter();
+    const filterArtist = document.getElementById('stats-filter-artist').value;
+    const isAll = filterArtist === 'all';
+
+    // フィルタリング
+    const targetLives = isAll ? db.lives : db.lives.filter(l => l.artist === filterArtist);
+
+    // 1. 年別データの集計
+    // --- 年別集計ロジック（0件補完版） ---
+    const yearlyCounts = {};
+    if (db.lives.length > 0) {
+        // 全データの中から「一番古い年」を取得
+        const yearsInData = db.lives.map(l => new Date(l.date).getFullYear()).filter(y => !isNaN(y));
+        const startYear = Math.min(...yearsInData);
+        // 「今年」を取得
+        const currentYear = new Date().getFullYear();
+
+        // 最初のライブの年から今年までを 0 で初期化（これで0件の年も埋まる）
+        for (let y = startYear; y <= currentYear; y++) {
+            yearlyCounts[y] = 0;
+        }
+
+        // 現在選択されているフィルタ（全対象 or 特定アーティスト）に一致する分をカウント
+        targetLives.forEach(l => {
+            const year = new Date(l.date).getFullYear();
+            if (!isNaN(year)) yearlyCounts[year]++;
+        });
+    }
+
+    // 集計用データ初期化
+    const counts = { artist: {}, song: {}, venue: {}, pref: {} };
+
+    targetLives.forEach(l => {
+        counts.artist[l.artist] = (counts.artist[l.artist] || 0) + 1;
+        counts.venue[l.venue] = (counts.venue[l.venue] || 0) + 1;
+        counts.pref[l.pref] = (counts.pref[l.pref] || 0) + 1;
+        if (l.setlist && Array.isArray(l.setlist)) {
+            l.setlist.forEach(s => counts.song[s] = (counts.song[s] || 0) + 1);
+        }
+    });
+
+    // [グラフ描画]
+    document.getElementById('total-count-display').innerText = targetLives.length;
+    document.getElementById('stats-total-label').innerText = isAll ? "Total" : "Lives";
+    
+    const sortedArtEntries = Object.entries(counts.artist).sort((a,b) => b[1]-a[1]);
+    if(chart) chart.destroy();
+    chart = new Chart(document.getElementById('artistChart'), { 
+        type: 'doughnut', 
+        data: { 
+            labels: sortedArtEntries.map(s=>s[0]), 
+            datasets: [{ data: sortedArtEntries.map(s=>s[1]), backgroundColor: refinedColors, borderWidth: 0 }] 
+        }, 
+        options: { cutout: '80%', plugins: { legend: { display: false } } } 
+    });
+
+    // [各ランキングの描画]
+    // アーティストランキング（全体表示の時のみ表示）
+    if(isAll) {
+        renderRanking('stats-artist-ranking', '🏆 アーティスト', counts.artist, '回', true);
+    } else {
+        document.getElementById('stats-artist-ranking').innerHTML = '';
+    }
+
+    // 【新設】年別ランキングの描画
+    renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
+
+    renderRanking('stats-song-ranking', '🎵 曲', counts.song, '回');
+    renderRanking('stats-venue-ranking', '🏟 会場', counts.venue, '回');
+    
+    // [地図描画]
+    const visited = [...new Set(targetLives.map(l => l.pref).filter(p => p && p !== '海外' && p !== ''))];
+    renderJapanMap(visited);
+    document.getElementById('visited-pref-count').innerText = visited.length;
+    document.getElementById('map-target-name').innerText = isAll ? '全国' : filterArtist;
+
+    renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
+}
+
+// 年別専用の描画関数
+function renderYearlyRanking(id, dataObj) {
+    const container = document.getElementById(id);
+    const sortedYears = Object.entries(dataObj).sort((a, b) => b[0] - a[0]);
+
+    // 1件もデータ（年）がない場合
+    if (sortedYears.length === 0) {
+        container.innerHTML = `<div class="card"><span class="section-title">📅 年別参戦数</span><div style="text-align:center; padding:20px; color:#8e8e93; font-size:0.9rem;">ライブを登録すると年表が表示されます</div></div>`;
+        return;
+    }
+
+    const maxCount = Math.max(...Object.values(dataObj), 1);
+    let html = `<div class="card"><span class="section-title">📅 年別参戦数</span>`;
+
+    sortedYears.forEach((entry, i) => {
+        const year = entry[0];
+        const count = entry[1];
+        const barWidth = (count / maxCount) * 100;
+        
+        // 11位以降を隠す設定
+        const isHidden = i >= 10;
+        const displayStyle = isHidden ? 'none' : 'flex';
+        const hiddenClass = isHidden ? 'rank-item-hidden' : '';
+
+        html += `
+            <div class="stats-list-item ${hiddenClass}" data-group="${id}" style="padding: 12px 0; align-items:center; display:${displayStyle}; width:100%;">
+                <div class="year-text" style="width:50px; flex-shrink:0; font-weight:bold; ${count === 0 ? 'opacity:0.3;' : ''}">${year}</div>
+                <div class="yearly-bar-container" style="flex:1; height:8px; background:#f2f2f7; border-radius:4px; margin:0 10px; overflow:hidden;">
+                    <div class="yearly-bar-fill" style="width: ${barWidth}%; height:100%; background:linear-gradient(90deg, #ff9500, #ffcc00); border-radius:4px; opacity:${count === 0 ? '0' : '1'};"></div>
+                </div>
+                <div style="font-weight:900; color:${count === 0 ? '#c7c7cc' : 'var(--primary-color)'}; min-width:35px; text-align:right;">
+                    ${count}<small style="font-size:0.6rem; font-weight:bold;">回</small>
+                </div>
+            </div>`;
+    });
+
+    if (sortedYears.length > 10) {
+        html += `<button id="${id}-btn" class="show-more-btn" onclick="toggleRankingNew('${id}')">もっと見る ▼</button>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// 統計描画内のランキング生成ロジック
+function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
+    const container = document.getElementById(id);
+    const sorted = Object.entries(dataObj)
+        .filter(e => e[0] && e[0] !== 'undefined' && e[0] !== '')
+        .sort((a,b) => b[1]-a[1]);
+    
+    if (sorted.length === 0) { container.innerHTML = ''; return; }
+
+    let html = `<div class="card"><span class="section-title">${title}ランキング</span>`;
+    let lastVal = -1;
+
+    sorted.forEach((entry, i) => {
+        const currentRank = i + 1;
+        const rankText = entry[1] === lastVal ? '' : currentRank + '位';
+        lastVal = entry[1];
+        
+        const isHidden = currentRank > 10;
+        const displayStyle = isHidden ? 'none' : 'flex';
+        const hiddenClass = isHidden ? 'rank-item-hidden' : '';
+        
+        // 詳細表示用のユニークIDを作成
+        const detailId = `detail-${id}-${i}`;
+
+        html += `
+            <div class="stats-list-item-container ${hiddenClass}" data-group="${id}" style="display:${displayStyle}; flex-direction:column; width:100%;">
+                <div class="stats-list-item" style="align-items:center; width:100%; border-bottom:1px solid #f2f2f7;">
+                    <div class="rank-num" style="min-width:45px; flex-shrink:0;">${rankText}</div>
+                    <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; cursor:pointer; font-weight:500;" 
+                         onclick="${isArtistRank ? `switchStatsTarget('${entry[0]}')` : `toggleStatsDetail('${detailId}', '${id}', '${entry[0].replace(/'/g, "\\'")}')`}">
+                        ${entry[0]}
+                    </div>
+                    <div style="font-weight:bold; color:var(--primary-color); margin-left:10px; flex-shrink:0;">
+                        ${entry[1]}<small style="font-size:0.6rem;">${unit}</small>
+                    </div>
+                </div>
+                <div id="${detailId}" class="stats-detail-list hidden"></div>
+            </div>`;
+    });
+
+    if (sorted.length > 10) {
+        html += `<button id="${id}-btn" class="show-more-btn" onclick="toggleRankingNew('${id}')">もっと見る ▼</button>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function toggleStatsDetail(detailId, type, value) {
+    const detailDiv = document.getElementById(detailId);
+    
+    // すでに表示されている場合は閉じる（トグル）
+    if (!detailDiv.classList.contains('hidden')) {
+        detailDiv.classList.add('hidden');
+        return;
+    }
+
+    // 現在のフィルター状態を取得
+    const filterArtist = document.getElementById('stats-filter-artist').value;
+    const isFiltered = filterArtist !== 'all';
+
+    // 該当するライブを抽出
+    let filteredLives = db.lives.filter(l => {
+        const matchesArtist = isFiltered ? l.artist === filterArtist : true;
+        let matchesValue = false;
+        if (type === 'stats-song-ranking') matchesValue = l.setlist && l.setlist.includes(value);
+        if (type === 'stats-venue-ranking') matchesValue = l.venue === value;
+        if (type === 'stats-pref-ranking') matchesValue = l.pref === value;
+        return matchesArtist && matchesValue;
+    });
+
+    // 日付順（新しい順）にソート
+    filteredLives.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // HTML生成
+    let html = '';
+    filteredLives.forEach(l => {
+        const artistSpan = isFiltered ? '' : `<span class="stats-detail-artist">${l.artist}</span><br>`;
+        
+        let subInfo = '';
+        if (type === 'stats-song-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
+        if (type === 'stats-venue-ranking') subInfo = ` (${l.pref || '-'})`;
+        if (type === 'stats-pref-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
+
+        html += `
+            <div class="stats-detail-item">
+                <span class="stats-detail-date">${l.date}</span>
+                ${artistSpan}
+                <span style="color:#444;">${l.name || '(無題)'}</span>
+                <span style="color:#8e8e93; font-size:0.75rem;">${subInfo}</span>
+            </div>`;
+    });
+
+    detailDiv.innerHTML = html;
+    detailDiv.classList.remove('hidden');
+}
+
+
+function toggleRankingNew(id) {
+    const items = document.querySelectorAll(`[data-group="${id}"].rank-item-hidden`);
+    const btn = document.getElementById(id + '-btn');
+    const isOpening = btn.innerText.includes('もっと見る');
+
+    items.forEach(item => {
+        // blockではなく、絶対に flex を指定
+        item.style.setProperty('display', isOpening ? 'flex' : 'none', 'important');
+    });
+
+    btn.innerText = isOpening ? '閉じる ▲' : 'もっと見る ▼';
+}
+
+
+
+// アーティストランキングから個別の統計に飛ばす関数
+function switchStatsTarget(name) {
+    document.getElementById('stats-filter-artist').value = name;
+    renderStats();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+        // 地図を生成する専用関数
+function renderJapanMap(visited) {
+    const container = document.getElementById('japan-map');
+    if (!container) return;
+
+    // フィルタリングされた現在のライブデータから、各都道府県の訪問回数を集計
+    const filterArtist = document.getElementById('stats-filter-artist').value;
+    const targetLives = filterArtist === 'all' ? db.lives : db.lives.filter(l => l.artist === filterArtist);
+    
+    const counts = {};
+    targetLives.forEach(l => {
+        if (l.pref && l.pref !== '海外') {
+            counts[l.pref] = (counts[l.pref] || 0) + 1;
+        }
+    });
+
+    // 最大訪問回数を取得（色の濃さの基準にする）
+    const maxVisit = Math.max(...Object.values(counts), 0);
+
+    const s = 22; 
+    const ox = 75, oy = 20;
+
+    // 都道府県配置データ（既存のものをそのまま使用）
+    const mapData = [
+        {p:'北海道', x:ox+s*9, y:oy+s*0, w:s*3, h:s*2, big:true},
+        {p:'青森県', x:ox+s*9, y:oy+s*3, w:s*2, h:s},
+        {p:'秋田県', x:ox+s*9, y:oy+s*4}, {p:'岩手県', x:ox+s*10, y:oy+s*4},
+        {p:'山形県', x:ox+s*9, y:oy+s*5}, {p:'宮城県', x:ox+s*10, y:oy+s*5},
+        {p:'福島県', x:ox+s*9, y:oy+s*6, w:s*2, h:s},
+        {p:'新潟県', x:ox+s*7, y:oy+s*6, w:s*2, h:s},
+        {p:'富山県', x:ox+s*6, y:oy+s*6}, {p:'石川県', x:ox+s*5, y:oy+s*6},
+        {p:'長野県', x:ox+s*7, y:oy+s*7, w:s, h:s*2},
+        {p:'福井県', x:ox+s*5, y:oy+s*7},
+        {p:'岐阜県', x:ox+s*6, y:oy+s*7, w:s, h:s*2},
+        {p:'山梨県', x:ox+s*8, y:oy+s*8}, {p:'愛知県', x:ox+s*6, y:oy+s*9},
+        {p:'静岡県', x:ox+s*7, y:oy+s*9},
+        {p:'栃木県', x:ox+s*9, y:oy+s*7}, {p:'群馬県', x:ox+s*8, y:oy+s*7},
+        {p:'茨城県', x:ox+s*10, y:oy+s*7, w:s, h:s*2}, {p:'埼玉県', x:ox+s*9, y:oy+s*8},
+        {p:'千葉県', x:ox+s*10, y:oy+s*9, w:s, h:s*2},
+        {p:'東京都', x:ox+s*9, y:oy+s*9}, {p:'神奈川県', x:ox+s*8, y:oy+s*9},
+        {p:'滋賀県', x:ox+s*5, y:oy+s*8}, {p:'京都府', x:ox+s*4, y:oy+s*7},
+        {p:'大阪府', x:ox+s*4, y:oy+s*8}, {p:'奈良県', x:ox+s*4, y:oy+s*9},
+        {p:'三重県', x:ox+s*5, y:oy+s*9},
+        {p:'兵庫県', x:ox+s*3, y:oy+s*7, w:s, h:s*2},
+        {p:'和歌山県', x:ox+s*4, y:oy+s*10, w:s*2, h:s},
+        {p:'鳥取県', x:ox+s*2, y:oy+s*7}, {p:'島根県', x:ox+s*1, y:oy+s*7},
+        {p:'岡山県', x:ox+s*2, y:oy+s*8},
+        {p:'広島県', x:ox+s*1, y:oy+s*8},
+        {p:'山口県', x:ox+s*0, y:oy+s*7, w:s, h:s*2},
+        {p:'香川県', x:ox+s*1, y:oy+s*10}, {p:'徳島県', x:ox+s*2, y:oy+s*10},
+        {p:'愛媛県', x:ox+s*1, y:oy+s*11}, {p:'高知県', x:ox+s*2, y:oy+s*11},
+        {p:'福岡県', x:ox-s*2, y:oy+s*8}, {p:'佐賀県', x:ox-s*3, y:oy+s*8}, {p:'大分県', x:ox-s*2, y:oy+s*9},
+        {p:'長崎県', x:ox-s*3, y:oy+s*9}, {p:'熊本県', x:ox-s*3, y:oy+s*10}, {p:'宮崎県', x:ox-s*2, y:oy+s*10},
+        {p:'鹿児島県', x:ox-s*3, y:oy+s*11, w:s*2, h:s},
+        {p:'沖縄県', x:ox-s*3, y:oy+s*14}
+    ];
+
+    let svgHtml = `<svg viewBox="0 0 350 420" width="100%" height="auto">`;
+
+    mapData.forEach(d => {
+        const count = counts[d.p] || 0;
+        const isVisited = count > 0;
+        
+        // 濃淡の計算: 回数が多いほど不透明度(opacity)を上げる (最小0.2, 最大1.0)
+        // 1回だけのときは少し薄く、回数が増えるほどパキッとした緑になります
+        const opacity = isVisited ? Math.max(0.2, count / maxVisit) : 1;
+        const color = isVisited ? `rgba(0, 113, 48, ${opacity})` : '#f2f2f7';
+        const textColor = isVisited ? (opacity > 0.5 ? '#ffffff' : '#007130') : '#8e8e93';
+        
+        const w = d.w || s;
+        const h = d.h || s;
+        const displayCode = prefCodes[d.p] || d.p.charAt(0);
+        const fontSize = d.big ? 11 : 7.5;
+        
+        svgHtml += `
+            <g style="cursor:pointer;" onclick="toggleStatsDetail('detail-stats-pref-ranking-manual', 'stats-pref-ranking', '${d.p}')">
+                <rect x="${d.x}" y="${d.y}" width="${w}" height="${h}" rx="2" fill="${color}" stroke="#ffffff" stroke-width="0.5" />
+                <text x="${d.x + w/2}" y="${d.y + h/2 + 3}" font-size="${fontSize}" font-weight="900" text-anchor="middle" fill="${textColor}" style="pointer-events:none; font-family: -apple-system, sans-serif;">${displayCode}</text>
+            </g>`;
+    });
+    
+    container.innerHTML = svgHtml + `</svg>
+    <div id="detail-stats-pref-ranking-manual" class="stats-detail-list hidden" style="margin-top:10px;"></div>`;
+}
+
+
+// 管理画面のリストを描画する関数
+function renderArtistManager() {
+    const searchInput = document.getElementById('artist-search-input');
+    const q = searchInput ? searchInput.value.toLowerCase() : "";
+    const listContainer = document.getElementById('artist-manager-list');
+    
+    if (!listContainer) return;
+
+    listContainer.innerHTML = db.artists
+        .filter(a => a.toLowerCase().includes(q))
+        .sort()
+        .map(a => `
+            <div class="artist-admin-row">
+                <span class="artist-name-text">${a}</span>
+                <div class="admin-btn-group">
+                    <button onclick="editArtistName('${a}')" class="btn-mini btn-edit">編集</button>
+                    <button onclick="deleteArtist('${a}')" class="btn-mini btn-delete">削除</button>
+                </div>
+            </div>`).join('') || '<div style="padding:20px; text-align:center; color:#8e8e93;">該当なし</div>';
+}
+
+// showPage関数内のID指定を修正（page-settingsに合わせて）
+function showPage(id) {
+    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+    
+    const targetPage = document.getElementById('page-' + id);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
+    
+    const targetTab = document.getElementById('tab-' + id);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
+
+    if(id==='history') renderHistory();
+    if(id==='stats') renderStats();
+    if(id==='settings') renderArtistManager(); // これで正しく呼ばれます
+}
+
+
+        function filterArtists() { renderArtistManager(); }
+
+        function editArtistName(old) {
+            const n = prompt('新しい名前', old);
+            if (!n || n === old) return;
+
+            // 1. すでにその名前が存在するかチェック
+            const exists = db.artists.includes(n);
+
+            if (exists) {
+                if (confirm(`「${n}」は既に存在します。履歴を統合してもよろしいですか？`)) {
+                    // 既存のAに統合する場合：古いBを削除するだけ（履歴は下の処理でAに書き換わる）
+                    db.artists = db.artists.filter(a => a !== old);
+                } else {
+                    return; // キャンセル
+                }
+            } else {
+                // 存在しない名前なら、普通に名前を上書き
+                db.artists[db.artists.indexOf(old)] = n;
+            }
+
+            // 2. 履歴（lives）の中にあるアーティスト名をすべて新しい名前に書き換える
+            db.lives.forEach(l => {
+                if (l.artist === old) l.artist = n;
+            });
+
+            save();
+            renderArtistManager();
+            if(document.getElementById('page-history').classList.contains('active')) renderHistory();
+        }
+
+// --- シェアレポート用：ここから ---
+let selectedThemeColor = '#007130'; 
+
+// モーダルを開く際に選択肢を最新にする
+function openShareModal() {
+    // 期間（年）の選択肢を自動生成
+    const periodSelect = document.getElementById('share-period-type');
+    const years = [...new Set(db.lives.map(l => l.date.split('-')[0]))].sort().reverse();
+    
+    periodSelect.innerHTML = '<option value="all">ALL TIME（全期間）</option>';
+    years.forEach(y => {
+        if(y) periodSelect.innerHTML += `<option value="${y}">${y}年 (Yearly)</option>`;
+    });
+
+    // アーティストの選択肢を自動生成
+    const artistSelect = document.getElementById('share-artist-type');
+    artistSelect.innerHTML = '<option value="all">ALL Artists（全対象）</option>';
+    db.artists.sort().forEach(a => {
+        artistSelect.innerHTML += `<option value="${a}">${a}</option>`;
+    });
+
+    document.getElementById('share-modal').classList.remove('hidden');
+}
+
+
+function closeShareModal() {
+    document.getElementById('share-modal').classList.add('hidden');
+}
+
+function setTheme(color) {
+    selectedThemeColor = color;
+    const btn = document.querySelector('#share-modal .accent-btn');
+    if(btn) {
+        btn.style.background = color;
+        
+        // 色の明るさを判定して、文字色を黒か白に自動で切り替える
+        const c = color.replace('#', '');
+        const r = parseInt(c.substr(0,2), 16);
+        const g = parseInt(c.substr(2,2), 16);
+        const b = parseInt(c.substr(4,2), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        
+        // 明るい色のときは文字を黒(#333)、暗い色のときは白に
+        btn.style.color = brightness > 150 ? '#333' : '#fff';
+        
+        // 白のときだけボタンに薄い枠線をつける（プレビューボタン用）
+        btn.style.border = brightness > 240 ? '1px solid #ccc' : 'none';
+    }
+}
+
+function toggleShareFilter() {
+    const type = document.getElementById('share-type').value;
+    const detail = document.getElementById('share-filter-detail');
+    if(!detail) return;
+    detail.innerHTML = '';
+
+    if (type === 'annual') {
+        const years = [...new Set(db.lives.map(l => l.date.split('-')[0]))].sort().reverse();
+        detail.innerHTML = `<select id="filter-year" style="margin-top:10px;">${years.length ? years.map(y => `<option value="${y}">${y}年</option>`).join('') : '<option value="">履歴なし</option>'}</select>`;
+    } else if (type === 'monthly') {
+        detail.innerHTML = `<input type="month" id="filter-month" value="${new Date().toISOString().slice(0, 7)}" style="margin-top:10px;">`;
+    } else if (type === 'artist') {
+        detail.innerHTML = `<select id="filter-artist" style="margin-top:10px;">${db.artists.length ? db.artists.sort().map(a => `<option value="${a}">${a}</option>`).join('') : '<option value="">アーティストなし</option>'}</select>`;
+    }
+}
+
+// 集計ロジックの強化
+function calculateReportStats(lives) {
+    const songCounts = {};
+    const venueCounts = {};
+    const prefCounts = {};
+    const artistCounts = {};
+    let totalSongs = 0;
+
+    lives.forEach(l => {
+        if(l.artist) artistCounts[l.artist] = (artistCounts[l.artist] || 0) + 1;
+        if(l.venue) venueCounts[l.venue] = (venueCounts[l.venue] || 0) + 1;
+        if(l.pref) prefCounts[l.pref] = (prefCounts[l.pref] || 0) + 1;
+        if (l.setlist) {
+            totalSongs += l.setlist.length;
+            l.setlist.forEach(s => songCounts[s] = (songCounts[s] || 0) + 1);
+        }
+    });
+
+    // --- ここから getTop のロジックを修正 ---
+    const getTop = (obj) => {
+        const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
+        if (entries.length === 0) return { text: "-", count: 0, others: 0 };
+        
+        const maxCount = entries[0][1];
+        const tops = entries.filter(e => e[1] === maxCount);
+        
+        // 2位までを改行でつなぐ。3位以降があればその件数を数える
+        let displayText = tops.slice(0, 2).map(e => e[0]).join('<br>');
+        let othersCount = tops.length > 2 ? tops.length - 2 : 0;
+        
+        return {
+            text: displayText,
+            count: maxCount,
+            others: othersCount
+        };
+    };
+
+    return {
+        totalLives: lives.length,
+        totalArtists: Object.keys(artistCounts).length,
+        totalSongs: totalSongs,
+        totalVenues: Object.keys(venueCounts).length,
+        totalPrefs: Object.keys(prefCounts).length,
+        // 各項目を新しいオブジェクト形式で返す
+        topArtist: getTop(artistCounts),
+        topSong: getTop(songCounts),
+        topVenue: getTop(venueCounts),
+        topPref: getTop(prefCounts)
+    };
+}
+
+// レポート生成（新レイアウト）
+function generateReport() {
+    const selectedYear = document.getElementById('share-period-type').value;
+    const selectedArtist = document.getElementById('share-artist-type').value;
+    let filteredLives = db.lives;
+
+    if (selectedYear !== 'all') filteredLives = filteredLives.filter(l => l.date.startsWith(selectedYear));
+    if (selectedArtist !== 'all') filteredLives = filteredLives.filter(l => l.artist === selectedArtist);
+
+    if (filteredLives.length === 0) { alert("データがありません"); return; }
+
+    const stats = calculateReportStats(filteredLives);
+    const container = document.getElementById('report-card-container');
+    const periodDisplay = selectedYear === 'all' ? 'ALL TIME' : selectedYear + ' YEAR';
+
+    // 背景の明るさを判定して文字色を決定
+    const hex = selectedThemeColor.replace('#', '');
+    const r = parseInt(hex.substr(0,2), 16);
+    const g = parseInt(hex.substr(2,2), 16);
+    const b = parseInt(hex.substr(4,2), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    const isLight = brightness > 180;
+
+    // カード全体の文字色クラスを切り替え
+    container.className = isLight ? 'report-theme-light' : 'report-theme-dark';
+    
+    // グラデーション背景を適用（推し色 → 少し濃い色への斜めグラデ）
+    container.style.background = `linear-gradient(135deg, ${selectedThemeColor} 0%, ${adjustColor(selectedThemeColor, -30)} 100%)`;
+
+    container.innerHTML = `
+        <div class="report-header">
+            <div class="report-title">LIVE PERFORMANCE RECORD</div>
+            <div class="report-period">${periodDisplay} / ${selectedArtist === 'all' ? 'ALL ARTISTS' : selectedArtist}</div>
+        </div>
+        
+        <div class="report-section-label">TOTAL STATS</div>
+        <div class="report-grid-mini">
+            <div class="report-item"><span class="report-label">ライブ数</span><span class="report-value">${stats.totalLives}</span></div>
+            <div class="report-item"><span class="report-label">アーティスト</span><span class="report-value">${stats.totalArtists}</span></div>
+            <div class="report-item"><span class="report-label">曲数</span><span class="report-value">${stats.totalSongs}</span></div>
+            <div class="report-item"><span class="report-label">会場数</span><span class="report-value">${stats.totalVenues}</span></div>
+            <div class="report-item"><span class="report-label">制覇都道府県</span><span class="report-value">${stats.totalPrefs}<small>/47</small></span></div>
+        </div>
+
+        <div class="report-section-label" style="margin-top:15px;">TOP RECORDS</div>
+
+<div class="report-best-list">
+    ${[
+        { label: 'BEST ARTIST', data: stats.topArtist },
+        { label: 'BEST MUSIC', data: stats.topSong },
+        { label: 'BEST PLACE', data: stats.topVenue }
+    ].map(item => `
+        <div class="best-entry">
+            <span class="report-label">${item.label}</span>
+            <div class="best-main-content">
+                <div class="report-value-long">${item.data.text}</div>
+                ${item.data.others > 0 ? `<div class="report-others-count">＋ 他${item.data.others}件</div>` : ''}
+                <div class="best-count-display">${item.data.count}<small>回</small></div>
+            </div>
+        </div>
+    `).join('')}
+</div>
+
+        <div class="report-footer">Generated by LIVE DIARY 🍊</div>
+    `;
+
+// generateReport 関数の最後（モーダルを表示する直前）にこれを追加
+const reportCard = document.getElementById('report-card-container');
+const windowHeight = window.innerHeight;
+const safeHeight = windowHeight * 0.8; // 画面の8割の高さに収める
+
+// カードの実際の高さを取得してスケールを計算
+reportCard.style.transform = 'scale(1)'; // 一旦リセット
+const cardHeight = reportCard.offsetHeight;
+
+if (cardHeight > safeHeight) {
+    const scale = safeHeight / cardHeight;
+    reportCard.style.transform = `scale(${scale})`;
+    reportCard.style.transformOrigin = 'top center';
+} else {
+    reportCard.style.transform = 'scale(1)';
+}
+
+
+
+
+
+    document.getElementById('report-preview-overlay').classList.remove('hidden');
+    closeShareModal();
+}
+
+// 色を暗くする補助関数
+function adjustColor(color, percent) {
+    const num = parseInt(color.replace('#',''),16),
+    amt = Math.round(2.55 * percent),
+    R = (num >> 16) + amt,
+    G = (num >> 8 & 0x00FF) + amt,
+    B = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R<255?R<0?0:R:255)*0x10000 + (G<255?G<0?0:G:255)*0x100 + (B<255?B<0?0:B:255)).toString(16).slice(1);
+}
+
+
+// --- 画像保存ロジック（html2canvasを使用） ---
+// 画像保存・共有ロジックの修正版
+async function saveReportImage() {
+    const card = document.getElementById('report-card-container');
+    
+    // 1. キャプチャ用にスケーリングを一時解除
+    const originalTransform = card.style.transform;
+    card.style.transform = 'scale(1)';
+
+    try {
+        const canvas = await html2canvas(card, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+
+        // スケーリングを元に戻す
+        card.style.transform = originalTransform;
+
+        // 2. Blob（データのかたまり）に変換
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], "LIVE_REPORT.png", { type: "image/png" });
+
+            // 3. Web Share API を使用して共有メニューを呼び出す（iPhone/Android用）
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'LIVE REPORT',
+                    });
+                } catch (err) {
+                    // ユーザーがキャンセルした場合は何もしない
+                    if (err.name !== 'AbortError') console.error("共有失敗:", err);
+                }
+            } else {
+                // 4. PCや未対応ブラウザ用のフォールバック（従来のダウンロード）
+                const link = document.createElement('a');
+                const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
+                link.download = `LIVE_REPORT_${dateStr}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                alert("共有機能が未対応のため、ダウンロードフォルダに保存しました。");
+            }
+        }, 'image/png');
+
+    } catch (e) {
+        console.error("生成エラー:", e);
+        card.style.transform = originalTransform;
+        alert("画像の生成に失敗しました。");
+    }
+}
+
+
+// --- シェアレポート用：ここまで ---
+
+        function deleteArtist(n) { if(confirm('削除しますか？')){ db.artists=db.artists.filter(a=>a!==n); db.lives=db.lives.filter(l=>l.artist!==n); save(); renderArtistManager(); } }
+        function exportData() { const blob = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='livelog.json'; a.click(); }
+        function importData(e) { const f = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => { db = JSON.parse(ev.target.result); save(); location.reload(); }; r.readAsText(f); }
+    </script>
+</body>
+</html>
