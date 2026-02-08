@@ -349,7 +349,19 @@ function updateVenueSuggestions() {
                             <div style="font-weight:bold;">${l.name||'(無題)'}</div>
                             <div class="history-venue" style="font-size:0.85rem; color:#666; margin-top:4px;">📍 ${l.venue || '会場未登録'}</div>
                         </div>`).join('')}
-                    </div>`;
+                        
+                        <div style="padding:15px; text-align:center; background-color:#f9fbf9;">
+                        <a href="https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686
+/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(art)}%2F" 
+                           target="_blank" rel="noopener noreferrer" 
+                           style="color:var(--primary-color); text-decoration:none; font-size:0.85rem; font-weight:bold; border:1px solid var(--primary-color); padding:8px 16px; border-radius:20px; display:inline-block; background:#fff;">
+                           💿 ${art} の作品を楽天で探す
+                        </a>
+                        <div style="font-size:10px; color:#999; margin-top:8px;">※外部サイトへ移動します</div>
+                    </div>
+                    </div>`; // 既存の閉じタグ
+                        
+
                 container.appendChild(card);
             });
         }
