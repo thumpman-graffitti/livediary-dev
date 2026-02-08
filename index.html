@@ -399,8 +399,7 @@ function updateVenueSuggestions() {
                         </div>`).join('')}
                         
                         <div style="padding:15px; text-align:center; background-color:#f9fbf9;">
-                        <a href="https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686
-/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(art)}%2F" 
+                        <a href="https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(art)}%2F" 
                            target="_blank" rel="noopener noreferrer" 
                            style="color:var(--primary-color); text-decoration:none; font-size:0.85rem; font-weight:bold; border:1px solid var(--primary-color); padding:8px 16px; border-radius:20px; display:inline-block; background:#fff;">
                            💿 ${art} の作品を楽天で探す
@@ -530,43 +529,31 @@ function renderStats() {
         options: { cutout: '80%', plugins: { legend: { display: false } } } 
     });
 
-    // [各ランキングの描画]
-    const searchLinkContainer = document.getElementById('stats-artist-search-link');
-
+    // [ランキング描画]
     if(isAll) {
         renderRanking('stats-artist-ranking', '🏆 アーティスト', counts.artist, '回', true);
-
     } else {
-        document.getElementById('stats-artist-ranking').innerHTML = '';
+        const artistRankEl = document.getElementById('stats-artist-ranking');
+        if(artistRankEl) artistRankEl.innerHTML = '';
     }
 
-
-    // 各種ランキングと地図の描画
-    renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
-    
     renderRanking('stats-song-ranking', '🎵 曲', counts.song, '回');
-
+    renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
     renderRanking('stats-venue-ranking', '🏟 会場', counts.venue, '回');
     
+    // 地図描画
     const visited = [...new Set(targetLives.map(l => l.pref).filter(p => p && p !== '海外' && p !== ''))];
     renderJapanMap(visited);
     document.getElementById('visited-pref-count').innerText = visited.length;
     document.getElementById('map-target-name').innerText = isAll ? '全国' : filterArtist;
 
     renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
+
+    // === 🛒 楽天アフィリエイト・常時表示エリア（ここから） ===
     
-    
-        // [既存] 都道府県ランキングの描画
-    renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
-
-    // ...（中略：色々な描画処理があるはずです）...
-
-    renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
-
-    // ★★★ ここに貼り付けます！ ★★★
-    // === 🛒 楽天アフィリエイト・常時表示エリア ===
+    // 1. アーティスト作品リンク
     const searchLinkContainer = document.getElementById('stats-artist-search-link');
-    const targetArtName = isAll ? (Object.entries(counts.artist).sort((a,b)=>b[1]-a[1])[0]?.[0] || '') : filterArtist;
+    const targetArtName = isAll ? (sortedArtEntries[0]?.[0] || '') : filterArtist;
 
     if (targetArtName && searchLinkContainer) {
         const artUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(targetArtName)}%2F`;
@@ -577,6 +564,7 @@ function renderStats() {
             </div>`;
     }
 
+    // 2. 他のリンクを正しい位置に差し込む関数
     const insertConvenienceLink = (id, afterId, keyword, label, icon, msg) => {
         let div = document.getElementById(id);
         if (!div) {
@@ -598,11 +586,9 @@ function renderStats() {
     insertConvenienceLink('link-binocular', 'stats-yearly-ranking', '防振双眼鏡', '防振双眼鏡を探す', '🔭', '広い会場でも推しをロックオン！ 🔭');
     insertConvenienceLink('link-battery', 'stats-venue-ranking', 'モバイルバッテリー Anker エレコム', 'モバイルバッテリーを探す', '🔋', '遠征中の電池切れを防ぐ ⚡️');
     insertConvenienceLink('link-silvtape', 'stats-pref-ranking', '銀テープ ケース', '銀テープケースを探す', '🎞️', '大切な銀テープを綺麗に保管 ✨');
+    
     // === 🛒 常時表示エリア（ここまで） ===
-}// ← これが renderStats 関数の「本当の最後」のカッコです
-
-
-
+}
 
 
 // 年別専用の描画関数
@@ -875,27 +861,6 @@ function renderArtistManager() {
                 </div>
             </div>`).join('') || '<div style="padding:20px; text-align:center; color:#8e8e93;">該当なし</div>';
 }
-
-// showPage関数内のID指定を修正（page-settingsに合わせて）
-function showPage(id) {
-    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
-    
-    const targetPage = document.getElementById('page-' + id);
-    if (targetPage) {
-        targetPage.classList.add('active');
-    }
-    
-    const targetTab = document.getElementById('tab-' + id);
-    if (targetTab) {
-        targetTab.classList.add('active');
-    }
-
-    if(id==='history') renderHistory();
-    if(id==='stats') renderStats();
-    if(id==='settings') renderArtistManager(); // これで正しく呼ばれます
-}
-
 
         function filterArtists() { renderArtistManager(); }
 
