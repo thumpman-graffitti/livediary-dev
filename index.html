@@ -607,6 +607,41 @@ function renderStats() {
     document.getElementById('map-target-name').innerText = isAll ? '全国' : filterArtist;
 
     renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
+    
+    
+        // [既存] 都道府県ランキングの描画
+    renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
+
+    // --- 🎞️ 銀テープケース検索リンク（都道府県ランキングの下へ移動） ---
+    if (isAll) {
+        const silverTapeKeyword = encodeURIComponent("銀テープ ケース");
+        const silverTapeUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${silverTapeKeyword}%2F`;
+        
+        let silverTapeDiv = document.getElementById('stats-silvtape-search-link');
+        if (!silverTapeDiv) {
+            silverTapeDiv = document.createElement('div');
+            silverTapeDiv.id = 'stats-silvtape-search-link';
+            // 都道府県ランキングのカードの後ろに挿入
+            document.getElementById('stats-pref-ranking').after(silverTapeDiv);
+        }
+
+        silverTapeDiv.innerHTML = `
+            <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: 5px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
+                <p style="font-size: 0.8rem; color: #444; margin: 0 0 8px 0; font-weight: bold; line-height: 1.4;">
+                    大切な銀テープを綺麗に保管 ✨
+                </p>
+                <a href="${silverTapeUrl}" 
+                   target="_blank" rel="noopener noreferrer" 
+                   style="display: inline-block; background: #bf0000; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
+                    🎞️ 銀テープケースを探す
+                </a>
+                <div style="font-size: 9px; color: #999; margin-top: 6px;">※外部サイトへ移動します</div>
+            </div>
+        `;
+    } else {
+        const silverTapeDiv = document.getElementById('stats-silvtape-search-link');
+        if (silverTapeDiv) silverTapeDiv.innerHTML = '';
+    }
 }
 
 
