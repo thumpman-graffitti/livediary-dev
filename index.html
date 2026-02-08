@@ -163,24 +163,20 @@
     </select>
                     <textarea id="edit-memo" rows="3" placeholder="メモ"></textarea>
                     <textarea id="edit-setlist" rows="5" placeholder="セトリ（改行区切り）"></textarea>
-                    <div style="display: flex; align-items: stretch; gap: 10px; margin-top: 20px; width: 100%; height: 44px;">
+// ライブ詳細（表示用）と編集画面の切り替え部分にあるボタンエリアのHTML
+`<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; height: 44px;">
     
-    <button onclick="saveLive()" class="primary-btn" style="
-        flex: 1; 
-        height: 100% !important; 
-        margin: 0 !important; 
-        padding: 0; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
-        box-sizing: border-box;
+    <button type="button" onclick="saveLive()" class="primary-btn" style="
+        height: 100%; 
+        margin: 0; 
+        width: 100%;
+        display: block;
     ">保存</button>
 
-    <button onclick="deleteLive()" style="
-        flex: 1; 
-        height: 100% !important; 
-        margin: 0 !important; 
-        padding: 0; 
+    <button type="button" onclick="deleteLive()" style="
+        height: 100%; 
+        margin: 0; 
+        width: 100%;
         box-sizing: border-box; 
         border: 1px solid #d32f2f; 
         background: #fff; 
@@ -188,9 +184,7 @@
         border-radius: 8px; 
         font-weight: bold; 
         cursor: pointer;
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
+        padding: 0;
     ">削除</button>
     
 </div>
