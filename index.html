@@ -568,7 +568,7 @@ function renderStats() {
     renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
     
     // --- 🔭 防振双眼鏡検索リンク（ココから挿入） ---
-    
+    if (isAll) {
         const binocularKeyword = encodeURIComponent("防振双眼鏡");
         const binocularUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${binocularKeyword}%2F`;
         
@@ -578,7 +578,7 @@ function renderStats() {
             binocularDiv.id = 'stats-binocular-search-link';
             // 年別ランキングの後に挿入
             document.getElementById('stats-yearly-ranking').after(binocularDiv);
-        
+        ｝
 
         binocularDiv.innerHTML = `
             <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: 5px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
