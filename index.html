@@ -634,6 +634,41 @@ function renderStats() {
 
     renderRanking('stats-venue-ranking', '🏟 会場', counts.venue, '回');
     
+
+    // --- 🔋 モバイルバッテリー検索リンク（ココから挿入） ---
+    if (isAll) {
+        // 安心感を重視し「モバイルバッテリー Anker エレコム」などのキーワードで構築
+        const batteryKeyword = encodeURIComponent("モバイルバッテリー Anker エレコム");
+        const batteryUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${batteryKeyword}%2F`;
+        
+        let batteryDiv = document.getElementById('stats-battery-search-link');
+        if (!batteryDiv) {
+            batteryDiv = document.createElement('div');
+            batteryDiv.id = 'stats-battery-search-link';
+            // 会場ランキングの後に挿入
+            document.getElementById('stats-venue-ranking').after(batteryDiv);
+        }
+
+        batteryDiv.innerHTML = `
+            <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: 5px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
+                <p style="font-size: 0.8rem; color: #444; margin: 0 0 8px 0; font-weight: bold; line-height: 1.4;">
+                    遠征中の電池切れを防ぐ ⚡️<br>安心の国内・定番メーカー品を
+                </p>
+                <a href="${batteryUrl}" 
+                   target="_blank" rel="noopener noreferrer" 
+                   style="display: inline-block; background: #bf0000; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
+                    🔋 モバイルバッテリーを探す
+                </a>
+                <div style="font-size: 9px; color: #999; margin-top: 6px;">※外部サイトへ移動します</div>
+            </div>
+        `;
+    } else {
+        const batteryDiv = document.getElementById('stats-battery-search-link');
+        if (batteryDiv) batteryDiv.innerHTML = '';
+    }
+    // --- 🔋 モバイルバッテリー検索リンク（ここまで） ---
+
+    
     const visited = [...new Set(targetLives.map(l => l.pref).filter(p => p && p !== '海外' && p !== ''))];
     renderJapanMap(visited);
     document.getElementById('visited-pref-count').innerText = visited.length;
