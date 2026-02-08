@@ -536,17 +536,25 @@ function renderStats() {
     if(isAll) {
         renderRanking('stats-artist-ranking', '🏆 アーティスト', counts.artist, '回', true);
         
-        // --- 💿 アーティスト検索リンク生成 ---
+       
+        // --- 💿 アーティスト検索リンク（赤ボタン・URL修正版） ---
         const sortedArts = Object.entries(counts.artist).sort((a, b) => b[1] - a[1]);
         if (sortedArts.length > 0 && searchLinkContainer) {
             const topArtist = sortedArts[0][0];
+            // 検索URLを構築（楽天アフィリエイトのリンク形式にアーティスト名を結合）
+            const searchUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(topArtist)}%2F`;
+
             searchLinkContainer.innerHTML = `
-                <div class="card" style="padding: 8px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; box-shadow: none; box-sizing: border-box;">
-                    <a href="https://hb.afl.rakuten.co.jp/hgc/g01rt00c.7b17208d.g01rt00c.7b172a56/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(topArtist)}%2F" 
+                <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: 5px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
+                    <p style="font-size: 0.8rem; color: #444; margin: 0 0 8px 0; font-weight: bold; line-height: 1.4;">
+                        1位の作品をチェック！ 💿
+                    </p>
+                    <a href="${searchUrl}" 
                        target="_blank" rel="noopener noreferrer" 
-                       style="text-decoration: none; color: #bf0000; font-size: 0.75rem; font-weight: bold;">
-                        💿 ${topArtist} の作品を楽天で探す ＞
+                       style="display: inline-block; background: #bf0000; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
+                        💿 ${topArtist} の作品を探す
                     </a>
+                    <div style="font-size: 9px; color: #999; margin-top: 6px;">※外部サイトへ移動します</div>
                 </div>
             `;
         }
@@ -554,6 +562,7 @@ function renderStats() {
         document.getElementById('stats-artist-ranking').innerHTML = '';
         if(searchLinkContainer) searchLinkContainer.innerHTML = '';
     }
+
 
     // 各種ランキングと地図の描画
     renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
