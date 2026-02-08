@@ -571,7 +571,9 @@ function renderStats() {
 
     // --- 🎧 オーディオ機器検索リンク（ココから挿入） ---
     if (isAll) {
-        const audioSearchUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E6%259C%2580%25E6%2596%25B0%2B%25E3%2582%25A4%25E3%2583%2593%25E3%2583%25B3%2F`;
+              // 読みやすい書き方（自動で「最新 イヤホン」をエンコードします）
+        const keyword = encodeURIComponent("最新 イヤホン");
+        const audioSearchUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${keyword}%2F`;
         let audioLinkDiv = document.getElementById('stats-audio-search-link');
         if (!audioLinkDiv) {
             audioLinkDiv = document.createElement('div');
