@@ -163,23 +163,32 @@
     </select>
                     <textarea id="edit-memo" rows="3" placeholder="メモ"></textarea>
                     <textarea id="edit-setlist" rows="5" placeholder="セトリ（改行区切り）"></textarea>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+<div style="display: flex; gap: 10px; margin-top: 20px; align-items: center; justify-content: center; width: 100%;">
     
-    <button onclick="saveLive()" class="primary-btn" style="flex: 1; height: 44px; margin: 0;">保存</button>
+    <button onclick="saveLive()" class="primary-btn" style="
+        flex: 1; 
+        height: 44px; 
+        margin: 0; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+    ">保存</button>
 
     <button onclick="deleteLive()" style="
         flex: 1; 
         height: 44px; 
+        margin: 0; 
+        padding: 0;
         box-sizing: border-box; 
         border: 1px solid #d32f2f; 
         background: #fff; 
         color: #d32f2f; 
         border-radius: 8px; 
         font-weight: bold; 
-        cursor: pointer; 
-        margin: 0;
-        padding: 0;
-        display: block;
+        cursor: pointer;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
     ">削除</button>
     
 </div>
