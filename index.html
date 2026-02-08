@@ -477,6 +477,7 @@ function updateStatsFilter() {
 }
 
 // 統計描画のメイン関数
+// 統計描画のメイン関数
 function renderStats() {
     updateStatsFilter();
     const filterArtist = document.getElementById('stats-filter-artist').value;
@@ -486,21 +487,16 @@ function renderStats() {
     const targetLives = isAll ? db.lives : db.lives.filter(l => l.artist === filterArtist);
 
     // 1. 年別データの集計
-    // --- 年別集計ロジック（0件補完版） ---
     const yearlyCounts = {};
     if (db.lives.length > 0) {
-        // 全データの中から「一番古い年」を取得
         const yearsInData = db.lives.map(l => new Date(l.date).getFullYear()).filter(y => !isNaN(y));
         const startYear = Math.min(...yearsInData);
-        // 「今年」を取得
         const currentYear = new Date().getFullYear();
 
-        // 最初のライブの年から今年までを 0 で初期化（これで0件の年も埋まる）
         for (let y = startYear; y <= currentYear; y++) {
             yearlyCounts[y] = 0;
         }
 
-        // 現在選択されているフィルタ（全対象 or 特定アーティスト）に一致する分をカウント
         targetLives.forEach(l => {
             const year = new Date(l.date).getFullYear();
             if (!isNaN(year)) yearlyCounts[year]++;
@@ -535,17 +531,13 @@ function renderStats() {
     });
 
     // [各ランキングの描画]
-    // アーティストランキング（全体表示の時のみ表示）
+    const searchLinkContainer = document.getElementById('stats-artist-search-link');
+
     if(isAll) {
         renderRanking('stats-artist-ranking', '🏆 アーティスト', counts.artist, '回', true);
-    } else {
-        document.getElementById('stats-artist-ranking').innerHTML = '';
-    }
-
-        // --- ここから挿入：アーティスト1位へのリンク生成 ---
-        const searchLinkContainer = document.getElementById('stats-artist-search-link');
-        const sortedArts = Object.entries(counts.artist).sort((a, b) => b[1] - a[1]);
         
+        // --- 💿 アーティスト検索リンク生成 ---
+        const sortedArts = Object.entries(counts.artist).sort((a, b) => b[1] - a[1]);
         if (sortedArts.length > 0 && searchLinkContainer) {
             const topArtist = sortedArts[0][0];
             searchLinkContainer.innerHTML = `
@@ -557,27 +549,17 @@ function renderStats() {
                     </a>
                 </div>
             `;
-        } else if (searchLinkContainer) {
-            searchLinkContainer.innerHTML = ''; // データがない時は空にする
         }
-        // --- ここまで ---
-
     } else {
         document.getElementById('stats-artist-ranking').innerHTML = '';
-        // 個別アーティスト選択時もリンクを隠す場合
-        if(document.getElementById('stats-artist-search-link')) {
-            document.getElementById('stats-artist-search-link').innerHTML = '';
-        }
+        if(searchLinkContainer) searchLinkContainer.innerHTML = '';
+    }
 
-
-
-    // 【新設】年別ランキングの描画
+    // 各種ランキングと地図の描画
     renderYearlyRanking('stats-yearly-ranking', yearlyCounts);
-
     renderRanking('stats-song-ranking', '🎵 曲', counts.song, '回');
     renderRanking('stats-venue-ranking', '🏟 会場', counts.venue, '回');
     
-    // [地図描画]
     const visited = [...new Set(targetLives.map(l => l.pref).filter(p => p && p !== '海外' && p !== ''))];
     renderJapanMap(visited);
     document.getElementById('visited-pref-count').innerText = visited.length;
@@ -585,6 +567,8 @@ function renderStats() {
 
     renderRanking('stats-pref-ranking', '📍 都道府県', counts.pref, '回');
 }
+
+
 
 // 年別専用の描画関数
 function renderYearlyRanking(id, dataObj) {
