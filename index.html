@@ -1142,7 +1142,33 @@ async function saveReportImage() {
 
         function deleteArtist(n) { if(confirm('削除しますか？')){ db.artists=db.artists.filter(a=>a!==n); db.lives=db.lives.filter(l=>l.artist!==n); save(); renderArtistManager(); } }
         function exportData() { const blob = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='livelog.json'; a.click(); }
-        function importData(e) { const f = e.target.files[0]; const r = new FileReader(); r.onload = (ev) => { db = JSON.parse(ev.target.result); save(); location.reload(); }; r.readAsText(f); }
+        function importData(e) { 
+    const f = e.target.files[0]; 
+    if (!f) return;
+    
+    // 1. ファイル選択後の確認ポップアップ
+    if (!confirm('リストアします。データが全て上書きされます。よろしいですか？')) {
+        e.target.value = ''; // 選択をリセット
+        return;
+    }
+
+    const r = new FileReader(); 
+    r.onload = (ev) => { 
+        try {
+            db = JSON.parse(ev.target.result); 
+            save(); 
+            
+            // 2. 完了後のポップアップ
+            alert('リストアしました');
+            
+            location.reload(); 
+        } catch(err) {
+            alert('ファイルの形式が正しくありません');
+        }
+    }; 
+    r.readAsText(f); 
+}
+
     </script>
 </body>
 </html>
