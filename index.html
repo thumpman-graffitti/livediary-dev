@@ -668,15 +668,24 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
         const targetName = entry[0];
 
         // 検索ワードの組み立て
+        // 検索ワードの組み立て
         let searchQuery = targetName;
         if (id === 'stats-song-ranking') {
             const filterArtist = document.getElementById('stats-filter-artist').value;
+            
             if (filterArtist !== 'all') {
-                // 「曲名 アーティスト名」の順に連結
+                // 特定のアーティストを選択中の場合
                 searchQuery = targetName + " " + filterArtist;
+            } else {
+                // 「すべてのアーティスト」を表示中の場合、データからその曲のアーティストを探す
+                const songData = db.lives.find(l => l.setlist && l.setlist.includes(targetName));
+                if (songData) {
+                    searchQuery = targetName + " " + songData.artist;
+                }
             }
         }
         const encodedSearch = encodeURIComponent(searchQuery);
+
 
         // 各アプリへの専用リンク
         const appleMusicUrl = `music://music.apple.com/search?term=${encodedSearch}`;
