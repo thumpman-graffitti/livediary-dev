@@ -677,8 +677,22 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
                 searchQuery = filterArtist + " " + targetName;
             }
         }
-        const encodedSearch = encodeURIComponent(searchQuery);
+        // --- Apple Music のリンクを「自動検索・表示」に強い形式に変更 ---
+// searchQuery は「アーティスト名」または「アーティスト名 曲名」
+const encodedSearch = encodeURIComponent(searchQuery);
 
+// 新しい Apple Music リンク（検索ページより深く潜ろうとします）
+const appleMusicUrl = `https://music.apple.com/jp/search?term=${encodedSearch}`;
+// ※もしブラウザではなく「ミュージックアプリ」を直接叩き起こしたい場合は 
+// `music://music.apple.com/search?term=${encodedSearch}` もありますが、
+// 互換性を考えてまずは上記（https）を推奨します。
+
+// Spotify リンク（これは検索結果画面が限界ですが、精度を上げます）
+const spotifyUrl = `spotify:search:${encodedSearch}`; 
+// ↑ http... ではなく spotify: で始めると、
+// ブラウザを挟まずに直接 Spotify アプリが「検索タブ」を開いた状態で起動します。
+
+        
         html += `
             <div class="stats-list-item-container ${hiddenClass}" data-group="${id}" style="display:${displayStyle}; flex-direction:column; width:100%;">
                 <div class="stats-list-item" style="display: flex; align-items:center; width:100%; border-bottom:1px solid #f2f2f7; padding: 10px 0;">
