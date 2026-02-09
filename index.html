@@ -704,9 +704,9 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
         if (id === 'stats-artist-ranking' || id === 'stats-song-ranking') {
             musicLinksHtml = `
                 <div class="music-links" style="display: flex; gap: 8px; margin: 0 10px; flex-shrink:0;">
-                    <a href="${appleMusicUrl}" 
+                    <a href="${appleMusicUrl}" target="_blank" rel="noopener noreferrer" 
                        style="text-decoration:none; width:26px; height:26px; display:flex; align-items:center; justify-content:center; background:#fa243c; border-radius:6px; font-size:13px; color:white;">🍎</a>
-                    <a href="${spotifyUrl}" 
+                    <a href="${spotifyUrl}" target="_blank" rel="noopener noreferrer" 
                        style="text-decoration:none; width:26px; height:26px; display:flex; align-items:center; justify-content:center; background:#1DB954; border-radius:50%; font-size:11px; color:white; font-weight:bold;">S</a>
                 </div>`;
         }
