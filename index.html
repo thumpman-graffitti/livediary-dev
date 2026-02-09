@@ -551,16 +551,17 @@ function renderStats() {
 
     // === 🛒 楽天アフィリエイト・常時表示エリア（ここから） ===
     
-    // 1. アーティスト作品リンク
+    // 1. アーティスト作品リンク（注釈を追加）
     const searchLinkContainer = document.getElementById('stats-artist-search-link');
     const targetArtName = isAll ? (sortedArtEntries[0]?.[0] || '') : filterArtist;
 
     if (targetArtName && searchLinkContainer) {
         const artUrl = `https://hb.afl.rakuten.co.jp/hgc/50ccba3d.194cbdf3.50ccba3e.b1170686/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F${encodeURIComponent(targetArtName)}%2F`;
         searchLinkContainer.innerHTML = `
-            <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: -15px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
+            <div class="card" style="padding: 12px 10px; text-align: center; border: 1px dashed #ccc; background: #fffaf0; margin: 5px 0 15px 0; box-shadow: none; width: 100%; box-sizing: border-box;">
                 <p style="font-size: 0.8rem; color: #444; margin: 0 0 8px 0; font-weight: bold; line-height: 1.4;">作品をチェック！ 💿</p>
                 <a href="${artUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background: #bf0000; color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">💿 ${targetArtName} の作品を探す</a>
+                <div style="font-size: 9px; color: #999; margin-top: 6px;">※外部サイトへ移動します</div>
             </div>`;
     }
 
