@@ -739,7 +739,6 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
     container.innerHTML = html;
 }
 
-
 function toggleStatsDetail(detailId, type, value) {
     const detailDiv = document.getElementById(detailId);
     
@@ -753,13 +752,29 @@ function toggleStatsDetail(detailId, type, value) {
     const filterArtist = document.getElementById('stats-filter-artist').value;
     const isFiltered = filterArtist !== 'all';
 
+    // ★重要：曲ランキングの場合は「曲名|アーティスト名」を分解する
+    let targetSongName = value;
+    let targetArtistName = null;
+    if (type === 'stats-song-ranking' && value.includes('|')) {
+        const parts = value.split('|');
+        targetSongName = parts[0];
+        targetArtistName = parts[1];
+    }
+
     // 該当するライブを抽出
     let filteredLives = db.lives.filter(l => {
         const matchesArtist = isFiltered ? l.artist === filterArtist : true;
         let matchesValue = false;
-        if (type === 'stats-song-ranking') matchesValue = l.setlist && l.setlist.includes(value);
+        
+        if (type === 'stats-song-ranking') {
+            // 曲名が一致し、かつ（アーティスト名が判別できれば）アーティストも一致するもの
+            const songMatch = l.setlist && l.setlist.includes(targetSongName);
+            const artistMatch = targetArtistName ? (l.artist === targetArtistName) : true;
+            matchesValue = songMatch && artistMatch;
+        }
         if (type === 'stats-venue-ranking') matchesValue = l.venue === value;
         if (type === 'stats-pref-ranking') matchesValue = l.pref === value;
+        
         return matchesArtist && matchesValue;
     });
 
@@ -768,26 +783,31 @@ function toggleStatsDetail(detailId, type, value) {
 
     // HTML生成
     let html = '';
-    filteredLives.forEach(l => {
-        const artistSpan = isFiltered ? '' : `<span class="stats-detail-artist">${l.artist}</span><br>`;
-        
-        let subInfo = '';
-        if (type === 'stats-song-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
-        if (type === 'stats-venue-ranking') subInfo = ` (${l.pref || '-'})`;
-        if (type === 'stats-pref-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
+    if (filteredLives.length === 0) {
+        html = '<div class="stats-detail-item" style="color:#8e8e93; font-size:0.8rem;">履歴が見つかりませんでした</div>';
+    } else {
+        filteredLives.forEach(l => {
+            const artistSpan = isFiltered ? '' : `<span class="stats-detail-artist">${l.artist}</span><br>`;
+            
+            let subInfo = '';
+            if (type === 'stats-song-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
+            if (type === 'stats-venue-ranking') subInfo = ` (${l.pref || '-'})`;
+            if (type === 'stats-pref-ranking') subInfo = ` @ ${l.venue || '会場未設定'}`;
 
-        html += `
-            <div class="stats-detail-item">
-                <span class="stats-detail-date">${l.date}</span>
-                ${artistSpan}
-                <span style="color:#444;">${l.name || '(無題)'}</span>
-                <span style="color:#8e8e93; font-size:0.75rem;">${subInfo}</span>
-            </div>`;
-    });
+            html += `
+                <div class="stats-detail-item">
+                    <span class="stats-detail-date">${l.date}</span>
+                    ${artistSpan}
+                    <span style="color:#444;">${l.name || '(無題)'}</span>
+                    <span style="color:#8e8e93; font-size:0.75rem;">${subInfo}</span>
+                </div>`;
+        });
+    }
 
     detailDiv.innerHTML = html;
     detailDiv.classList.remove('hidden');
 }
+
 
 
 function toggleRankingNew(id) {
