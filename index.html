@@ -140,22 +140,24 @@
                     <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
                 </a>
             </li>
-            <li style="border-bottom: 1px solid #f2f2f7;">
-                <a href="#" onclick="alert('利用規約ページへ（準備中）')" 
-                   style="text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
-                    <span style="font-size: 0.9rem;">利用規約</span>
-                    <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" onclick="alert('プライバシーポリシーページへ（準備中）')" 
-                   style="text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
-                    <span style="font-size: 0.9rem;">プライバシーポリシー</span>
-                    <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
-                </a>
-            </li>
-        </ul>
-    </div>
+            
+            
+        <li style="border-bottom: 1px solid #f2f2f7;">
+            <div onclick="openTermsModal('terms')" 
+               style="cursor: pointer; text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                <span style="font-size: 0.9rem;">利用規約</span>
+                <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
+            </div>
+        </li>
+        <li>
+            <div onclick="openTermsModal('privacy')" 
+               style="cursor: pointer; text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                <span style="font-size: 0.9rem;">プライバシーポリシー</span>
+                <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
+            </div>
+        </li>
+    </ul>
+</div>
 
     <div class="support-container" style="margin: 15px !important; padding: 25px 20px !important; border: 1px solid #ffebcd !important; border-radius: 15px !important; background: #fffaf0 !important; box-sizing: border-box !important; text-align: center !important;">
         <div class="support-content" style="background: transparent !important; border: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;">
@@ -240,6 +242,10 @@
             </div>
         </div>
     </div>
+
+
+
+
 
 
 <div id="share-modal" class="modal-overlay hidden" onclick="closeShareModal()">
@@ -1295,6 +1301,51 @@ async function saveReportImage() {
     r.readAsText(f); 
 }
 
+// 規約モーダルを開く
+function openTermsModal(type) {
+    const titleEl = document.getElementById('terms-modal-title');
+    const bodyEl = document.getElementById('terms-modal-body');
+
+    if (type === 'terms') {
+        titleEl.innerText = "利用規約";
+        bodyEl.innerHTML = `
+            <p><strong>第1条（目的）</strong><br>本規約は、LIVE DIARY 🍊（以下「本アプリ」といいます）の利用条件を定めるものです。</p>
+            <p><strong>第2条（非公式性）</strong><br>本アプリは個人が制作した非公式ツールであり、公式のアーティスト、事務所、関係各社とは一切関係ありません。</p>
+            <p><strong>第3条（データの管理）</strong><br>データは利用者の端末内に保存されます。開発者は内容の取得やバックアップの義務を負いません。消失時の責任も負いかねます。</p>
+            <p><strong>第4条（禁止事項）</strong><br>本アプリのプログラムの全部または一部を、改変の有無を問わず、第三者に再配布、転載、または販売する行為を禁止します。</p>
+            <p><strong>第5条（知的財産権）</strong><br>本アプリのプログラム、独自のデザイン、及びデータベース構造の著作権は開発者に帰属します。</p>
+            <p><strong>第6条（免責事項）</strong><br>利用により生じた損害について開発者は一切の責任を負いません。外部リンク先でのトラブルも同様です。</p>
+        `;
+    } else if (type === 'privacy') {
+        titleEl.innerText = "プライバシーポリシー";
+        bodyEl.innerHTML = `
+            <p><strong>個人情報の収集</strong><br>本アプリは、氏名やメールアドレス等の個人情報を収集・送信することはありません。データはすべて端末内に保存されます。</p>
+            <p><strong>アクセス解析</strong><br>利用状況把握のためGoogleアナリティクスを使用しています。匿名データとして収集され、個人を特定するものではありません。</p>
+            <p><strong>アフィリエイト</strong><br>本アプリは楽天アフィリエイト等のプログラムを利用しています。リンク先での購入に関しては各提携先のポリシーをご確認ください。</p>
+            <p><strong>免責</strong><br>本ポリシーは、本アプリ内にのみ適用されます。</p>
+        `;
+    }
+
+    document.getElementById('terms-modal').classList.remove('hidden');
+}
+
+// 規約モーダルを閉じる
+function closeTermsModal() {
+    document.getElementById('terms-modal').classList.add('hidden');
+}
+
     </script>
+    
+    <div id="terms-modal" class="modal-overlay hidden" onclick="closeTermsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h3 id="terms-modal-title" style="margin:0; font-size:1rem;">規約</h3>
+            <button onclick="closeTermsModal()" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body" id="terms-modal-body" style="overflow-y: auto; text-align: left; font-size: 0.85rem; line-height: 1.6; color: #444; padding: 15px;">
+            </div>
+    </div>
+</div>
+    
 </body>
 </html>
