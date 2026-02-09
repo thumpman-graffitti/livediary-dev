@@ -116,47 +116,68 @@
         </div>
 
     <div id="stats-pref-ranking"></div>
-
 </div>
+
+
 <div id="page-settings" class="tab-content">
     <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.0</div>
 
-<div class="settings-card" style="margin-top: 10px !important;">
-
-    <span class="section-title">データのバックアップ・リストア</span>
-    <div class="backup-controls">
-        <button onclick="exportData()">バックアップ</button>
-
-<button onclick="document.getElementById('import-file').click()">リストア</button>
-<input type="file" id="import-file" style="display:none;" onchange="importData(event)" accept=".json">
-
+    <div class="settings-card" style="margin-top: 10px !important;">
+        <span class="section-title">データのバックアップ・リストア</span>
+        <div class="backup-controls">
+            <button onclick="exportData()">バックアップ</button>
+            <button onclick="document.getElementById('import-file').click()">リストア</button>
+            <input type="file" id="import-file" style="display:none;" onchange="importData(event)" accept=".json">
+        </div>
     </div>
-</div>
 
-  <div class="support-container" style="margin: -5px 15px 5px 15px !important; padding: 25px 20px !important; border: 1px solid #ffebcd !important; border-radius: 15px !important; background: #fffaf0 !important; box-sizing: border-box !important; text-align: center !important;">
-
-    <div class="support-content" style="background: transparent !important; border: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;">
-     <h3 class="support-title">LIVE DIARY🍊を応援する</h3>
-        <p class="support-description">
-            LIVE DIARYは、個人開発の無料アプリです。<br>
-            もしこのアプリを気に入っていただけましたら、<br>
-            OFUSE（ファンレター・投げ銭）をいただけると、今後の開発の大きな励みになります。
-        </p>
-        <a href="https://ofuse.me/livediary" target="_blank" rel="noopener noreferrer" class="ofuse-btn-b">
-            🍊 開発者を応援する（OFUSE）
-        </a>
+    <div class="card" style="margin-top: 10px; padding: 5px 0;">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="border-bottom: 1px solid #f2f2f7;">
+                <a href="https://note.com/あなたのID/n/取得したURL" target="_blank" rel="noopener noreferrer" 
+                   style="text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                    <span style="font-size: 0.9rem; font-weight: bold;">🍊 使い方マニュアル (note)</span>
+                    <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
+                </a>
+            </li>
+            <li style="border-bottom: 1px solid #f2f2f7;">
+                <a href="#" onclick="alert('利用規約ページへ（準備中）')" 
+                   style="text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                    <span style="font-size: 0.9rem;">利用規約</span>
+                    <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="alert('プライバシーポリシーページへ（準備中）')" 
+                   style="text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                    <span style="font-size: 0.9rem;">プライバシーポリシー</span>
+                    <span style="color: #c7c7cc; font-size: 1.1rem;">›</span>
+                </a>
+            </li>
+        </ul>
     </div>
-</div>
 
+    <div class="support-container" style="margin: 15px !important; padding: 25px 20px !important; border: 1px solid #ffebcd !important; border-radius: 15px !important; background: #fffaf0 !important; box-sizing: border-box !important; text-align: center !important;">
+        <div class="support-content" style="background: transparent !important; border: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;">
+            <h3 class="support-title">LIVE DIARY🍊を応援する</h3>
+            <p class="support-description">
+                LIVE DIARYは、個人開発の無料アプリです。<br>
+                もしこのアプリを気に入っていただけましたら、<br>
+                OFUSE（ファンレター・投げ銭）をいただけると、今後の開発の大きな励みになります。
+            </p>
+            <a href="https://ofuse.me/livediary" target="_blank" rel="noopener noreferrer" class="ofuse-btn-b">
+                🍊 開発者を応援する（OFUSE）
+            </a>
+        </div>
+    </div>
 
-    <div class="card" style="margin-top: 10px; !important">
+    <div class="card" style="margin-top: 10px !important;">
         <span class="section-title">登録アーティストの管理</span>
         <input type="text" id="artist-search-input" placeholder="アーティスト名で検索..." oninput="renderArtistManager()" style="margin-bottom: 10px;">
-        
-        <div id="artist-manager-list" style="max-height: 300px; overflow-y: auto; border-top: 1px solid #eee;">
-            </div>
+        <div id="artist-manager-list" style="max-height: 300px; overflow-y: auto; border-top: 1px solid #eee;"></div>
     </div>
 </div>
+
 
     </main>
 
