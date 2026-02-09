@@ -672,12 +672,10 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
         if (id === 'stats-song-ranking') {
             const filterArtist = document.getElementById('stats-filter-artist').value;
             if (filterArtist !== 'all') {
-                searchQuery = filterArtist + " " + targetName;
+                // 「曲名 アーティスト名」の順に連結
+                searchQuery = targetName + " " + filterArtist;
             }
         }
-        
-        // --- 修正箇所：renderRanking関数内の音楽リンク表示部分 ---
-
         const encodedSearch = encodeURIComponent(searchQuery);
 
         // 各アプリへの専用リンク
