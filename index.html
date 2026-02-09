@@ -510,8 +510,12 @@ function renderStats() {
         counts.venue[l.venue] = (counts.venue[l.venue] || 0) + 1;
         counts.pref[l.pref] = (counts.pref[l.pref] || 0) + 1;
         if (l.setlist && Array.isArray(l.setlist)) {
-            l.setlist.forEach(s => counts.song[s] = (counts.song[s] || 0) + 1);
-        }
+    l.setlist.forEach(s => {
+        // 「曲名|アーティスト名」をキーにして、別々の曲として扱う
+        const songKey = `${s}|${l.artist}`;
+        counts.song[songKey] = (counts.song[songKey] || 0) + 1;
+    });
+}
     });
 
     // [グラフ描画]
@@ -668,24 +672,31 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
         const targetName = entry[0];
 
         // 検索ワードの組み立て
-        // 検索ワードの組み立て
-        let searchQuery = targetName;
-        if (id === 'stats-song-ranking') {
-            const filterArtist = document.getElementById('stats-filter-artist').value;
-            
-            if (filterArtist !== 'all') {
-                // 特定のアーティストを選択中の場合
-                searchQuery = targetName + " " + filterArtist;
-            } else {
-                // 「すべてのアーティスト」を表示中の場合、データからその曲のアーティストを探す
-                const songData = db.lives.find(l => l.setlist && l.setlist.includes(targetName));
-                if (songData) {
-                    searchQuery = targetName + " " + songData.artist;
-                }
-            }
-        }
-        const encodedSearch = encodeURIComponent(searchQuery);
+let displayTitle = targetKey;
+let artistNameForSearch = "";
 
+// 曲ランキングの場合はキーを分解する
+if (id === 'stats-song-ranking' && targetKey.includes('|')) {
+    const parts = targetKey.split('|');
+    displayTitle = parts[0];       // 表示するのは曲名
+    artistNameForSearch = parts[1]; // 検索用にアーティスト名を保持
+}
+
+const targetName = displayTitle; // 表示用の名前
+
+// 検索ワードの組み立て
+let searchQuery = targetName;
+if (id === 'stats-song-ranking') {
+    const filterArtist = document.getElementById('stats-filter-artist').value;
+    
+    if (filterArtist !== 'all') {
+        searchQuery = targetName + " " + filterArtist;
+    } else {
+        // 分解したアーティスト名を使って確実に「曲名 アーティスト名」にする
+        searchQuery = targetName + " " + artistNameForSearch;
+    }
+}
+const encodedSearch = encodeURIComponent(searchQuery);
 
         // 各アプリへの専用リンク
         const appleMusicUrl = `music://music.apple.com/search?term=${encodedSearch}`;
