@@ -669,40 +669,37 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
         const hiddenClass = isHidden ? 'rank-item-hidden' : '';
         
         const detailId = `detail-${id}-${i}`;
-        const targetName = entry[0];
+        
+        // --- 修正の要：変数の定義 ---
+        const targetKey = entry[0]; // 元のデータ（曲名|アーティスト名 など）
+        let displayTitle = targetKey;
+        let artistNameForSearch = "";
+
+        // 曲ランキングの場合はキーを分解する
+        if (id === 'stats-song-ranking' && targetKey.includes('|')) {
+            const parts = targetKey.split('|');
+            displayTitle = parts[0];       // 表示用の曲名
+            artistNameForSearch = parts[1]; // 検索用のアーティスト名
+        }
+
+        const targetName = displayTitle; // 表示用の名前を確定
 
         // 検索ワードの組み立て
-let displayTitle = targetKey;
-let artistNameForSearch = "";
-
-// 曲ランキングの場合はキーを分解する
-if (id === 'stats-song-ranking' && targetKey.includes('|')) {
-    const parts = targetKey.split('|');
-    displayTitle = parts[0];       // 表示するのは曲名
-    artistNameForSearch = parts[1]; // 検索用にアーティスト名を保持
-}
-
-const targetName = displayTitle; // 表示用の名前
-
-// 検索ワードの組み立て
-let searchQuery = targetName;
-if (id === 'stats-song-ranking') {
-    const filterArtist = document.getElementById('stats-filter-artist').value;
-    
-    if (filterArtist !== 'all') {
-        searchQuery = targetName + " " + filterArtist;
-    } else {
-        // 分解したアーティスト名を使って確実に「曲名 アーティスト名」にする
-        searchQuery = targetName + " " + artistNameForSearch;
-    }
-}
-const encodedSearch = encodeURIComponent(searchQuery);
+        let searchQuery = targetName;
+        if (id === 'stats-song-ranking') {
+            const filterArtist = document.getElementById('stats-filter-artist').value;
+            if (filterArtist !== 'all') {
+                searchQuery = targetName + " " + filterArtist;
+            } else if (artistNameForSearch) {
+                searchQuery = targetName + " " + artistNameForSearch;
+            }
+        }
+        const encodedSearch = encodeURIComponent(searchQuery);
 
         // 各アプリへの専用リンク
         const appleMusicUrl = `music://music.apple.com/search?term=${encodedSearch}`;
         const spotifyUrl = `spotify:search:${encodedSearch}`;
 
-        // ★追加：アーティストまたは曲ランキングの時だけリンクHTMLを生成する
         let musicLinksHtml = '';
         if (id === 'stats-artist-ranking' || id === 'stats-song-ranking') {
             musicLinksHtml = `
@@ -720,7 +717,7 @@ const encodedSearch = encodeURIComponent(searchQuery);
                     <div class="rank-num" style="min-width:40px; flex-shrink:0; font-size:0.85rem; color:#8e8e93;">${rankText}</div>
                     
                     <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; cursor:pointer; font-weight:500;" 
-                         onclick="${isArtistRank ? `switchStatsTarget('${targetName.replace(/'/g, "\\'")}')` : `toggleStatsDetail('${detailId}', '${id}', '${targetName.replace(/'/g, "\\'")}')`}">
+                         onclick="${isArtistRank ? `switchStatsTarget('${targetName.replace(/'/g, "\\'")}')` : `toggleStatsDetail('${detailId}', '${id}', '${targetKey.replace(/'/g, "\\'")}')`}">
                         ${targetName}
                     </div>
 
@@ -741,7 +738,6 @@ const encodedSearch = encodeURIComponent(searchQuery);
     html += '</div>';
     container.innerHTML = html;
 }
-
 
 
 function toggleStatsDetail(detailId, type, value) {
