@@ -677,45 +677,28 @@ function renderRanking(id, title, dataObj, unit, isArtistRank = false) {
                 searchQuery = filterArtist + " " + targetName;
             }
         }
-        // --- Apple Music のリンクを「自動検索・表示」に強い形式に変更 ---
-// searchQuery は「アーティスト名」または「アーティスト名 曲名」
+        
+        
+        // --- renderRanking 関数内の URL定義部分を以下に差し替え ---
+
 const encodedSearch = encodeURIComponent(searchQuery);
 
-// 新しい Apple Music リンク（検索ページより深く潜ろうとします）
-const appleMusicUrl = `https://music.apple.com/jp/search?term=${encodedSearch}`;
-// ※もしブラウザではなく「ミュージックアプリ」を直接叩き起こしたい場合は 
-// `music://music.apple.com/search?term=${encodedSearch}` もありますが、
-// 互換性を考えてまずは上記（https）を推奨します。
+// Apple Music: ブラウザを介さずアプリの検索機能を直接叩くURL
+const appleMusicUrl = `music://music.apple.com/search?term=${encodedSearch}`;
 
-// Spotify リンク（これは検索結果画面が限界ですが、精度を上げます）
-const spotifyUrl = `spotify:search:${encodedSearch}`; 
-// ↑ http... ではなく spotify: で始めると、
-// ブラウザを挟まずに直接 Spotify アプリが「検索タブ」を開いた状態で起動します。
+// Spotify: アプリの検索画面を開くURL
+const spotifyUrl = `spotify:search:${encodedSearch}`;
 
+// --- HTML出力部分も、念のため target="_blank" を外してシンプルにします ---
+html += `
+    <div class="music-links" style="display: flex; gap: 6px; margin: 0 10px; flex-shrink:0;">
+        <a href="${appleMusicUrl}" 
+           style="text-decoration:none; width:24px; height:24px; display:flex; align-items:center; justify-content:center; background:#fa243c; border-radius:5px; font-size:12px; color:white;">🍎</a>
         
-        html += `
-            <div class="stats-list-item-container ${hiddenClass}" data-group="${id}" style="display:${displayStyle}; flex-direction:column; width:100%;">
-                <div class="stats-list-item" style="display: flex; align-items:center; width:100%; border-bottom:1px solid #f2f2f7; padding: 10px 0;">
-                    <div class="rank-num" style="min-width:40px; flex-shrink:0;">${rankText}</div>
-                    
-                    <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; cursor:pointer; font-weight:500;" 
-                         onclick="${isArtistRank ? `switchStatsTarget('${targetName.replace(/'/g, "\\'")}')` : `toggleStatsDetail('${detailId}', '${id}', '${targetName.replace(/'/g, "\\'")}')`}">
-                        ${targetName}
-                    </div>
-
-                    <div class="music-links" style="display: flex; gap: 6px; margin: 0 10px; flex-shrink:0;">
-                        <a href="https://music.apple.com/jp/search?term=${encodedSearch}" target="_blank" rel="noopener noreferrer" 
-                           style="text-decoration:none; width:24px; height:24px; display:flex; align-items:center; justify-content:center; background:#fa243c; border-radius:5px; font-size:12px; color:white;">🍎</a>
-                        <a href="https://open.spotify.com/search/${encodedSearch}" target="_blank" rel="noopener noreferrer" 
-                           style="text-decoration:none; width:24px; height:24px; display:flex; align-items:center; justify-content:center; background:#1DB954; border-radius:50%; font-size:10px; color:white; font-weight:bold;">S</a>
-                    </div>
-
-                    <div style="font-weight:bold; color:var(--primary-color); flex-shrink:0; min-width:35px; text-align:right;">
-                        ${entry[1]}<small style="font-size:0.6rem;">${unit}</small>
-                    </div>
-                </div>
-                <div id="${detailId}" class="stats-detail-list hidden"></div>
-            </div>`;
+        <a href="${spotifyUrl}" 
+           style="text-decoration:none; width:24px; height:24px; display:flex; align-items:center; justify-content:center; background:#1DB954; border-radius:50%; font-size:10px; color:white; font-weight:bold;">S</a>
+    </div>
+`;
     });
 
     if (sorted.length > 10) {
