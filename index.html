@@ -1349,21 +1349,18 @@ function closeTermsModal() {
     </script>
     
     <div id="terms-modal" class="modal-overlay hidden" onclick="closeTermsModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column; width: 90%; max-width: 400px; margin: auto;">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column; width: 90%; max-width: 400px; margin: auto; border-radius: 15px; overflow: hidden;">
         
-        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
-            <div style="width: 24px;"></div> <h3 id="terms-modal-title" style="margin:0; font-size:1.1rem; text-align: center; flex-grow: 1;">規約</h3>
-            <button onclick="closeTermsModal()" class="close-btn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0; width: 24px;">✕</button>
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f2f2f7; background: #fff;">
+            <div style="width: 24px;"></div> <h3 id="terms-modal-title" style="margin:0; font-size:1rem; text-align: center; flex-grow: 1; font-weight: bold;">規約</h3>
+            <button onclick="closeTermsModal()" class="close-btn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0; width: 24px; color: #8e8e93;">✕</button>
         </div>
 
-        <div class="modal-body" id="terms-modal-body" style="overflow-y: auto; text-align: left; font-size: 0.85rem; line-height: 1.7; color: #444; padding: 20px; background: #fff;">
+        <div class="modal-body" id="terms-modal-body" style="overflow-y: auto; text-align: left; font-size: 0.85rem; line-height: 1.7; color: #444; padding: 20px 20px 40px 20px; background: #fff;">
             </div>
-
-        <div style="padding: 15px; border-top: 1px solid #f2f2f7; background: #fff; text-align: center; border-radius: 0 0 15px 15px;">
-            <button onclick="closeTermsModal()" style="background: #8e8e93; color: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">閉じる</button>
-        </div>
     </div>
 </div>
+
     
 </body>
 </html>
