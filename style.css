@@ -915,20 +915,27 @@ button.primary-btn:not(#generate-report-btn):active {
     vertical-align: middle;
 }
 
-/* ベスト項目の外枠：縦長の中央揃えレイアウト */
+
+
+/* --- TOP RECORDS：保存時のカクつきを抑えるフラットデザイン修正 --- */
+
 .best-entry {
     display: flex;
     flex-direction: column;
-    position: relative; /* ラベルを左上に固定するため */
-    padding: 25px 15px 15px 15px !important; /* 上にラベル用の余白 */
+    position: relative;
+    padding: 25px 15px 15px 15px !important;
     border-radius: 12px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
+    
+    /* 🌟 ここを修正：ぼかしを廃止し、背景を非常に薄い白に固定 */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important; /* 影による階調崩れを防止 */
 }
 
-/* 項目ラベル（BEST ARTISTなど）：左上に小さく配置 */
+/* 項目ラベル（BEST ARTISTなど）：位置は維持 */
 .best-entry .report-label {
     position: absolute;
     top: 8px;
@@ -938,22 +945,44 @@ button.primary-btn:not(#generate-report-btn):active {
     letter-spacing: 0.15em;
     opacity: 0.5;
     text-transform: uppercase;
+    color: inherit;
 }
 
-/* 中央コンテンツエリア */
+/* テーマ別の微調整：保存時の安全性を最大化 */
+.report-theme-dark .best-entry {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.report-theme-light .best-entry {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* 中央コンテンツエリアの配置維持 */
 .best-main-content {
-    text-align: center; /* すべて中央揃え */
+    text-align: center;
     width: 100%;
 }
 
-/* 主役のアーティスト名・曲名：大きく、太く */
+/* 主役のテキスト（アーティスト名など）：サイズと太さを維持 */
 .report-value-long {
-    font-size: 1.4rem !important; /* さらに大きく */
+    font-size: 1.5rem !important;
     font-weight: 900 !important;
     line-height: 1.2;
-    margin-bottom: 4px;
-    word-break: break-word; /* 長い名前でも折り返す */
+    margin: 5px 0;
+    word-break: break-word;
 }
+
+.best-count-display {
+    font-size: 1rem;
+    font-weight: 800;
+    opacity: 0.9;
+    margin-top: -2px;
+}
+
+
+
 
 /* 同率の他n件：目立たせず、スタイリッシュに */
 .report-others-count {
@@ -976,16 +1005,6 @@ button.primary-btn:not(#generate-report-btn):active {
     font-weight: normal;
 }
 
-/* 映え要素：カードに微かな光彩を追加（テーマ別） */
-.report-theme-dark .best-entry {
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 0 15px rgba(255,255,255,0.05);
-}
-
-.report-theme-light .best-entry {
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.02);
-}
 
 
 
@@ -1009,12 +1028,6 @@ button.primary-btn:not(#generate-report-btn):active {
     width: 90%;
     max-width: 360px;
     box-sizing: border-box;
-}
-
-/* TOP RECORDSの各セルをさらにコンパクトに */
-.best-entry {
-    padding: 20px 10px 12px 10px !important;
-    margin-bottom: 8px; /* 隙間を詰める */
 }
 
 /* アーティスト名をより強調しつつ、高さを抑える */
