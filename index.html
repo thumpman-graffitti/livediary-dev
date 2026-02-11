@@ -120,7 +120,7 @@
 
 
 <div id="page-settings" class="tab-content">
-    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.2</div>
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.3</div>
 
     <div class="settings-card" style="margin-top: 10px !important;">
         <span class="section-title">データのバックアップ・リストア</span>
@@ -1172,8 +1172,11 @@ function generateReport() {
     // カード全体の文字色クラスを切り替え
     container.className = isLight ? 'report-theme-light' : 'report-theme-dark';
     
-    // グラデーション背景を適用（推し色 → 少し濃い色への斜めグラデ）
+    // 🌟【ここを書き換え！】グラデーション設定をより堅牢にする
     container.style.background = `linear-gradient(135deg, ${selectedThemeColor} 0%, ${adjustColor(selectedThemeColor, -30)} 100%)`;
+    container.style.backgroundSize = "100% 100%"; // 描画範囲を固定
+    container.style.backgroundAttachment = "scroll"; // 固定背景によるバグを防止
+    container.style.backgroundRepeat = "no-repeat";
 
     container.innerHTML = `
         <div class="report-header">
