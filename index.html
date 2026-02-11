@@ -120,7 +120,7 @@
 
 
 <div id="page-settings" class="tab-content">
-    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.1</div>
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.2</div>
 
     <div class="settings-card" style="margin-top: 10px !important;">
         <span class="section-title">データのバックアップ・リストア</span>
@@ -1173,10 +1173,18 @@ function generateReport() {
     container.className = isLight ? 'report-theme-light' : 'report-theme-dark';
     
     // 🌟【ここを書き換え！】グラデーション設定をより堅牢にする
-    container.style.background = `linear-gradient(135deg, ${selectedThemeColor} 0%, ${adjustColor(selectedThemeColor, -30)} 100%)`;
-    container.style.backgroundSize = "100% 100%"; // 描画範囲を固定
-    container.style.backgroundAttachment = "scroll"; // 固定背景によるバグを防止
-    container.style.backgroundRepeat = "no-repeat";
+    // カード全体の文字色クラスを切り替え
+    container.className = isLight ? 'report-theme-light' : 'report-theme-dark';
+    
+    // 🌟 滑らかなグラデーションのためのノイズ画像データ
+    const noiseUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyAMAAAA9YU9LAAAABGdBTUEAALGPC/xhBQAAABRQTFRFMS0xISEhISEhISEhISEhISEhISEhIdmS3wAAAAZ0Uk5TAB8fPz8/P1YmXm0AAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAuSURBVDjLY2CAA0YmIDLBBEMmJpYIKgaKIDKBBEMmBmoaiIEYKKIYiIEYKCIYCAD6uAEXm9OnfQAAAABJRU5ErkJggg==";
+
+    // 🌟 背景設定：ノイズとグラデーションを重ねて適用
+    container.style.background = `url("${noiseUrl}"), linear-gradient(135deg, ${selectedThemeColor} 0%, ${adjustColor(selectedThemeColor, -30)} 100%)`;
+    container.style.backgroundBlendMode = "overlay"; // ノイズを馴染ませる
+    container.style.backgroundSize = "64px 64px, 100% 100%"; // ノイズの細かさを指定
+    container.style.backgroundRepeat = "repeat, no-repeat";
+    container.style.backgroundAttachment = "scroll";
 
     container.innerHTML = `
         <div class="report-header">
