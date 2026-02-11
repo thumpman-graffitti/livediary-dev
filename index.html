@@ -317,12 +317,16 @@
 
 
 
-
 <div id="report-preview-overlay" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
     <div id="report-card-container" onclick="event.stopPropagation()"></div>
     
     <div class="report-action-buttons" onclick="event.stopPropagation()">
-        <button onclick="saveReportImage()" class="primary-btn" style="margin-top:20px; width:200px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">画像の保存／シェア</button>
+        <button onclick="saveReportImage()" class="primary-btn" style="margin-top:20px; width:220px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">画像の保存／シェア</button>
+        
+        <button onclick="shareOnX()" class="primary-btn" style="margin-top:12px; width:220px; background-color: #000; color: #fff; border: 1px solid #333; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fab fa-x-twitter"></i> Xへ投稿する
+        </button>
+
         <button onclick="document.getElementById('report-preview-overlay').classList.add('hidden')" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; font-size:0.9rem; opacity:0.8;">閉じる</button>
     </div>
 </div>
@@ -1284,6 +1288,23 @@ async function saveReportImage() {
         card.style.transform = originalTransform;
         alert("画像の生成に失敗しました。");
     }
+}
+
+
+// 🌟追加：X投稿用関数
+function shareOnX() {
+    // 統計画面の合計表示から数値を取得
+    const statsTotal = document.getElementById('total-count-display').innerText;
+    const text = `LIVE DIARY 🍊 でライブ参戦レポートを生成しました！\n合計参戦数は ${statsTotal} 公演！\n\n#LIVEDIARY #推し活\n`;
+    
+    // アプリのURL
+    const appUrl = "https://livediary-app.com/"; 
+    
+    // XのシェアインテントURLを作成
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(appUrl)}`;
+    
+    // 新しいウィンドウで開く
+    window.open(xUrl, '_blank');
 }
 
 
