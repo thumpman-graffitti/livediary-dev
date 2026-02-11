@@ -120,7 +120,7 @@
 
 
 <div id="page-settings" class="tab-content">
-    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.3</div>
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.4</div>
 
     <div class="settings-card" style="margin-top: 10px !important;">
         <span class="section-title">データのバックアップ・リストア</span>
@@ -1268,43 +1268,44 @@ function adjustColor(color, percent) {
 async function saveReportImage() {
     const card = document.getElementById('report-card-container');
     const originalTransform = card.style.transform;
-    const originalBackground = card.style.background; // 元の背景を保存
+    const originalBg = card.style.background;
 
-    // 1. 準備：描画ズレ防止
+    // 1. 準備：カードを「透明」にする（html2canvasに背景を描かせないため）
     card.style.transform = 'none';
-
-    // 🌟【最強の解決策】保存の瞬間だけ、背景を「本物のCanvasグラデーション」に差し替える
-    // これにより、html2canvasの計算ミスを強制的に回避します
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = card.offsetWidth;
-    tempCanvas.height = card.offsetHeight;
-    const ctx = tempCanvas.getContext('2d');
-
-    // Canvasで滑らかなグラデーションを作成
-    const gradient = ctx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
-    gradient.addColorStop(0, selectedThemeColor);
-    gradient.addColorStop(1, adjustColor(selectedThemeColor, -30));
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-    // 作成した滑らかな画像を背景にセット
-    card.style.background = `url(${tempCanvas.toDataURL()}) no-repeat center / cover`;
+    card.style.background = 'transparent'; 
 
     try {
-        // 2. 超高品質設定で画像化
-        const canvas = await html2canvas(card, {
-            scale: 3, // 3で十分滑らかになります
+        // 2. 文字と枠だけの透明な画像を生成（ここはhtml2canvasが得意な領域）
+        const contentCanvas = await html2canvas(card, {
+            scale: 3,
             useCORS: true,
-            backgroundColor: null,
+            backgroundColor: null, // 背景を完全に透過させる
             logging: false
         });
 
-        // 3. 後始末：背景と変形を元に戻す
-        card.style.background = originalBackground;
+        // 3. 【ここが重要】背景専用の「超高画質キャンバス」を自前で作る
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = contentCanvas.width;
+        finalCanvas.height = contentCanvas.height;
+        const ctx = finalCanvas.getContext('2d');
+
+        // ブラウザのネイティブ機能でグラデーションを描画（これが一番滑らか）
+        const grad = ctx.createLinearGradient(0, 0, finalCanvas.width, finalCanvas.height);
+        grad.addColorStop(0, selectedThemeColor);
+        grad.addColorStop(1, adjustColor(selectedThemeColor, -30));
+        
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+        // 4. 合体：滑らかな背景の上に、文字（contentCanvas）を重ねる
+        ctx.drawImage(contentCanvas, 0, 0);
+
+        // 5. 後始末：画面上の見た目を元に戻す
+        card.style.background = originalBg;
         card.style.transform = originalTransform;
 
-        // 4. 保存・共有処理（以前のロジックとアラートを維持）
-        canvas.toBlob(async (blob) => {
+        // 6. 保存・共有処理（以前のロジックを継承）
+        finalCanvas.toBlob(async (blob) => {
             if (!blob) { alert("画像の生成に失敗しました。"); return; }
             const file = new File([blob], "LIVE_REPORT.png", { type: "image/png" });
 
@@ -1318,17 +1319,17 @@ async function saveReportImage() {
                 const link = document.createElement('a');
                 const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
                 link.download = `LIVE_REPORT_${dateStr}.png`;
-                link.href = canvas.toDataURL("image/png", 1.0);
+                link.href = finalCanvas.toDataURL("image/png", 1.0);
                 link.click();
                 alert("共有機能が未対応のため、ダウンロードフォルダに保存しました。");
             }
         }, 'image/png', 1.0);
 
     } catch (e) {
-        card.style.background = originalBackground;
+        card.style.background = originalBg;
         card.style.transform = originalTransform;
         console.error("生成エラー:", e);
-        alert("画像の生成に失敗しました。再度お試しください。");
+        alert("画像の生成に失敗しました。");
     }
 }
 
