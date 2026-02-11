@@ -120,7 +120,7 @@
 
 
 <div id="page-settings" class="tab-content">
-    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.0</div>
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.1</div>
 
     <div class="settings-card" style="margin-top: 10px !important;">
         <span class="section-title">データのバックアップ・リストア</span>
@@ -1254,30 +1254,33 @@ function adjustColor(color, percent) {
 
 
 // --- 画像保存ロジック（html2canvasを使用） ---
-// 画像保存・共有ロジックの修正版
 async function saveReportImage() {
     const card = document.getElementById('report-card-container');
     
-    // 1. キャプチャ用にスケーリングを一時解除
     const originalTransform = card.style.transform;
     card.style.transform = 'scale(1)';
 
     try {
         const canvas = await html2canvas(card, {
             backgroundColor: null,
-            scale: 2,
+            scale: 3, // 💡 2から3に上げて、より高精細に（グラデーションを滑らかに）
             useCORS: true,
-            logging: false
+            logging: false,
+            // 💡 描画の際にアンチエイリアス（滑らかにする処理）を意識させる
+            imageTimeout: 0,
+            onclone: (clonedDoc) => {
+                // クローンした要素に対して、書き出し直前にスタイルを微調整
+                const clonedCard = clonedDoc.getElementById('report-card-container');
+                clonedCard.style.webkitFontSmoothing = "antialiased";
+            }
         });
 
-        // スケーリングを元に戻す
         card.style.transform = originalTransform;
 
-        // 2. Blob（データのかたまり）に変換
+        // 💡 修正ポイント：第3引数に品質（1.0 = 最高画質）を指定
         canvas.toBlob(async (blob) => {
             const file = new File([blob], "LIVE_REPORT.png", { type: "image/png" });
 
-            // 3. Web Share API を使用して共有メニューを呼び出す（iPhone/Android用）
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
@@ -1285,19 +1288,18 @@ async function saveReportImage() {
                         title: 'LIVE REPORT',
                     });
                 } catch (err) {
-                    // ユーザーがキャンセルした場合は何もしない
                     if (err.name !== 'AbortError') console.error("共有失敗:", err);
                 }
             } else {
-                // 4. PCや未対応ブラウザ用のフォールバック（従来のダウンロード）
                 const link = document.createElement('a');
                 const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
                 link.download = `LIVE_REPORT_${dateStr}.png`;
-                link.href = canvas.toDataURL("image/png");
+                // 💡 こちらも image/png, 1.0 で最高画質を担保
+                link.href = canvas.toDataURL("image/png", 1.0);
                 link.click();
-                alert("共有機能が未対応のため、ダウンロードフォルダに保存しました。");
+                alert("共有機能が未対応のため、保存しました。");
             }
-        }, 'image/png');
+        }, 'image/png', 1.0); // 💡 第3引数に 1.0 を追加
 
     } catch (e) {
         console.error("生成エラー:", e);
@@ -1305,7 +1307,6 @@ async function saveReportImage() {
         alert("画像の生成に失敗しました。");
     }
 }
-
 
 // 🌟追加：X投稿用関数
 function shareOnX() {
