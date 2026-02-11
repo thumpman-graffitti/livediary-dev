@@ -1269,27 +1269,42 @@ async function saveReportImage() {
     const card = document.getElementById('report-card-container');
     const originalTransform = card.style.transform;
     const originalBg = card.style.background;
+    const bestEntries = card.querySelectorAll('.best-entry');
 
-    // 1. 準備：カードを「透明」にする（html2canvasに背景を描かせないため）
+    // 1. 準備：html2canvasに「余計なこと」をさせない設定
     card.style.transform = 'none';
-    card.style.background = 'transparent'; 
+    card.style.background = 'transparent'; // 背景を透明にして、html2canvasには文字だけ撮らせる
+
+    // 🌟 劣化の原因「ぼかし」を一時的に無効化し、色味を維持する
+    const originalStyles = [];
+    bestEntries.forEach((entry, i) => {
+        originalStyles[i] = {
+            backdrop: entry.style.backdropFilter,
+            webkitBackdrop: entry.style.webkitBackdropFilter,
+            bg: entry.style.background
+        };
+        entry.style.backdropFilter = 'none';
+        entry.style.webkitBackdropFilter = 'none';
+        // 半透明の白で代用（描画エラーを防ぐ）
+        entry.style.background = 'rgba(255, 255, 255, 0.1)'; 
+    });
 
     try {
         // 2. 文字と枠だけの透明な画像を生成（ここはhtml2canvasが得意な領域）
         const contentCanvas = await html2canvas(card, {
             scale: 3,
             useCORS: true,
-            backgroundColor: null, // 背景を完全に透過させる
+            backgroundColor: null,
             logging: false
         });
 
-        // 3. 【ここが重要】背景専用の「超高画質キャンバス」を自前で作る
+        // 3. 🌟【ここが心臓部】背景だけをブラウザの最高画質エンジンで自作する
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = contentCanvas.width;
         finalCanvas.height = contentCanvas.height;
         const ctx = finalCanvas.getContext('2d');
 
-        // ブラウザのネイティブ機能でグラデーションを描画（これが一番滑らか）
+        // Canvasのネイティブ機能でグラデーションを描画（これが物理的に最も滑らかです）
         const grad = ctx.createLinearGradient(0, 0, finalCanvas.width, finalCanvas.height);
         grad.addColorStop(0, selectedThemeColor);
         grad.addColorStop(1, adjustColor(selectedThemeColor, -30));
@@ -1297,14 +1312,19 @@ async function saveReportImage() {
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
 
-        // 4. 合体：滑らかな背景の上に、文字（contentCanvas）を重ねる
+        // 4. 合体：最高画質の背景の上に、文字を重ねる
         ctx.drawImage(contentCanvas, 0, 0);
 
-        // 5. 後始末：画面上の見た目を元に戻す
+        // 5. 後始末：ユーザーの画面を元のデザインに戻す
         card.style.background = originalBg;
         card.style.transform = originalTransform;
+        bestEntries.forEach((entry, i) => {
+            entry.style.backdropFilter = originalStyles[i].backdrop;
+            entry.style.webkitBackdropFilter = originalStyles[i].webkitBackdrop;
+            entry.style.background = originalStyles[i].bg;
+        });
 
-        // 6. 保存・共有処理（以前のロジックを継承）
+        // 6. 保存・共有処理（最高画質のまま出力）
         finalCanvas.toBlob(async (blob) => {
             if (!blob) { alert("画像の生成に失敗しました。"); return; }
             const file = new File([blob], "LIVE_REPORT.png", { type: "image/png" });
@@ -1321,18 +1341,18 @@ async function saveReportImage() {
                 link.download = `LIVE_REPORT_${dateStr}.png`;
                 link.href = finalCanvas.toDataURL("image/png", 1.0);
                 link.click();
-                alert("共有機能が未対応のため、ダウンロードフォルダに保存しました。");
+                alert("共有機能が未対応のため、保存しました。");
             }
         }, 'image/png', 1.0);
 
     } catch (e) {
+        // エラー時も必ずスタイルを戻す
         card.style.background = originalBg;
         card.style.transform = originalTransform;
         console.error("生成エラー:", e);
         alert("画像の生成に失敗しました。");
     }
 }
-
 
 // 🌟追加：X投稿用関数
 function shareOnX() {
