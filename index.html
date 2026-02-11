@@ -120,7 +120,7 @@
 
 
 <div id="page-settings" class="tab-content">
-    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.3</div>
+    <div class="app-version-info" style="text-align: center; font-size: 12px; color: #8e8e93; margin-bottom: 10px;">Ver 1.0.0</div>
 
     <div class="settings-card" style="margin-top: 10px !important;">
         <span class="section-title">データのバックアップ・リストア</span>
@@ -1256,58 +1256,86 @@ function adjustColor(color, percent) {
 }
 
 
-// --- 画像保存ロジック（html2canvasを使用） ---
+// 【修正版】高画質化対応済みの画像保存ロジック
 async function saveReportImage() {
     const card = document.getElementById('report-card-container');
-    
     const originalTransform = card.style.transform;
-    card.style.transform = 'scale(1)';
+    
+    // 1. 準備：描画ズレ防止のためスケーリングを一時解除
+    card.style.transform = 'none';
+    
+    // 🌟【ここが魔法のロジック】保存時のみ、複雑なCSSをSVG背景に動的に置き換える
+    const bestEntries = card.querySelectorAll('.best-entry');
+    const isDarkTheme = card.classList.contains('report-theme-dark');
+    const originalBackgrounds = [];
+
+    // 現在のテーマに合わせて、滑らかなSVGグラデーションを生成
+    const svgBg = isDarkTheme
+        // ダークテーマ用：薄い白のグラデーション
+        ? `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='rgba(255,255,255,0.15)'/%3E%3Cstop offset='100%25' stop-color='rgba(255,255,255,0.05)'/%3E%3C/linearGradient%3E%3Crect width='100%25' height='100%25' fill='url(%23g)' rx='12' ry='12'/%3E%3C/svg%3E`
+        // ライトテーマ用：少し濃い白のグラデーション
+        : `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='rgba(255,255,255,0.6)'/%3E%3Cstop offset='100%25' stop-color='rgba(255,255,255,0.3)'/%3E%3C/linearGradient%3E%3Crect width='100%25' height='100%25' fill='url(%23g)' rx='12' ry='12'/%3E%3C/svg%3E`;
+
+    // 一時的にスタイルを差し替え、元のスタイルをバックアップ
+    bestEntries.forEach((entry, index) => {
+        originalBackgrounds[index] = entry.style.background;
+        entry.style.background = `url("${svgBg}") no-repeat center / cover`;
+        // ぼかし効果も画像化のノイズになるため一時的にオフ
+        entry.style.backdropFilter = 'none';
+        entry.style.webkitBackdropFilter = 'none';
+    });
 
     try {
+        // 2. 高品質設定で画像化
         const canvas = await html2canvas(card, {
-            backgroundColor: null,
-            scale: 3, // 💡 2から3に上げて、より高精細に（グラデーションを滑らかに）
+            scale: 3, // 解像度を3倍に（必須）
             useCORS: true,
+            backgroundColor: null,
             logging: false,
-            // 💡 描画の際にアンチエイリアス（滑らかにする処理）を意識させる
-            imageTimeout: 0,
+            // フォントのギザギザを軽減
             onclone: (clonedDoc) => {
-                // クローンした要素に対して、書き出し直前にスタイルを微調整
-                const clonedCard = clonedDoc.getElementById('report-card-container');
-                clonedCard.style.webkitFontSmoothing = "antialiased";
+                clonedDoc.getElementById('report-card-container').style.webkitFontSmoothing = 'antialiased';
             }
         });
 
+        // 3. 後始末：差し替えたスタイルを元に戻す
+        bestEntries.forEach((entry, index) => {
+            entry.style.background = originalBackgrounds[index];
+            entry.style.backdropFilter = '';
+            entry.style.webkitBackdropFilter = '';
+        });
         card.style.transform = originalTransform;
 
-        // 💡 修正ポイント：第3引数に品質（1.0 = 最高画質）を指定
+        // 4. 保存・共有処理（最高画質で出力）
         canvas.toBlob(async (blob) => {
+            if (!blob) {alert("画像の生成に失敗しました。"); return;}
             const file = new File([blob], "LIVE_REPORT.png", { type: "image/png" });
 
             if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'LIVE REPORT',
-                    });
+                    await navigator.share({ files: [file], title: 'LIVE REPORT' });
                 } catch (err) {
                     if (err.name !== 'AbortError') console.error("共有失敗:", err);
                 }
             } else {
                 const link = document.createElement('a');
-                const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
-                link.download = `LIVE_REPORT_${dateStr}.png`;
-                // 💡 こちらも image/png, 1.0 で最高画質を担保
+                link.download = `LIVE_REPORT_${new Date().getTime()}.png`;
+                // ここでも最高品質を指定
                 link.href = canvas.toDataURL("image/png", 1.0);
                 link.click();
-                alert("共有機能が未対応のため、保存しました。");
             }
-        }, 'image/png', 1.0); // 💡 第3引数に 1.0 を追加
+        }, 'image/png', 1.0);
 
     } catch (e) {
-        console.error("生成エラー:", e);
+        // エラー時も必ずスタイルを元に戻す
+        bestEntries.forEach((entry, index) => {
+            entry.style.background = originalBackgrounds[index];
+            entry.style.backdropFilter = '';
+            entry.style.webkitBackdropFilter = '';
+        });
         card.style.transform = originalTransform;
-        alert("画像の生成に失敗しました。");
+        console.error("生成エラー:", e);
+        alert("画像の生成に失敗しました。再度お試しください。");
     }
 }
 
