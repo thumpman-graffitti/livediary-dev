@@ -317,34 +317,35 @@
 <div id="report-preview-overlay" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
     <div id="report-card-container" onclick="event.stopPropagation()"></div>
     
-    <div class="report-action-buttons" onclick="event.stopPropagation()" style="display: flex; flex-direction: column; align-items: center;">
+    <div class="report-action-buttons" onclick="event.stopPropagation()" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
         
-        <button onclick="saveReportImage()" class="primary-btn" style="margin-top:20px; width:200px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">画像の保存／シェア</button>
+        <button onclick="saveReportImage()" class="primary-btn" style="margin-top:20px; width:220px !important;">画像の保存</button>
         
         <button onclick="shareOnX()" style="
-            margin-top: 12px !important; 
-            width: 200px !important; 
-            height: 45px !important;
-            background-color: #000000 !important; 
+            width: 220px !important; 
+            height: 48px !important; /* 保存ボタンの高さに合わせる */
+            background: linear-gradient(180deg, #333 0%, #000 100%) !important; /* グラデーションで視認性UP */
             color: #ffffff !important; 
-            border: 1px solid #333333 !important; 
-            border-radius: 10px !important;
+            border: 1px solid #555 !important; /* 暗い背景でもわかる枠線 */
+            border-radius: 25px !important; /* 保存ボタンと同じ角丸設定 */
             display: flex !important; 
             align-items: center; 
             justify-content: center; 
-            gap: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+            gap: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
             font-weight: bold !important;
-            font-size: 14px !important;
+            font-size: 16px !important;
             cursor: pointer !important;
+            transition: transform 0.1s;
             -webkit-appearance: none;
         ">
-            <i class="fab fa-x-twitter"></i> Xへ投稿
+            <i class="fab fa-x-twitter" style="font-size: 1.2rem;"></i> Xへ投稿
         </button>
 
-        <button onclick="document.getElementById('report-preview-overlay').classList.add('hidden')" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; font-size:0.9rem; opacity:0.8;">閉じる</button>
+        <button onclick="document.getElementById('report-preview-overlay').classList.add('hidden')" style="background:none; border:none; color:#ccc; margin-top:10px; text-decoration:underline; font-size:0.9rem; cursor:pointer;">閉じる</button>
     </div>
 </div>
+
 
     <nav class="tab-bar">
         <button onclick="showPage('home')" id="tab-home" class="active"><span class="icon">♢</span><span>ホーム</span></button>
